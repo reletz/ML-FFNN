@@ -389,3 +389,125 @@ Model.fit()
 - Learning rate: 3 different values.
 - Regularization: none vs L1 vs L2.
 - sklearn comparison: same hyperparameters, compare predictions only.
+
+---
+
+## Implementation Sequence
+
+### Phase 1: Foundation
+
+#### 1. Core Infrastructure
+1. **Set up project structure** — Create all folders and `__init__.py` files.
+2. **Implement base classes** — Create abstract base classes in each module:
+   - `activations/__init__.py` — `Activation` base class with `forward()` and `backward()`
+   - `losses/__init__.py` — `Loss` base class with `compute()` and `gradient()`
+   - `initializers/__init__.py` — `Initializer` base class with `initialize()`
+   - `regularizers/__init__.py` — `Regularizer` base class with `penalty()` and `gradient()`
+   - `optimizers/__init__.py` — `Optimizer` base class with `update()`
+   - `core/__init__.py` — Base classes for `Layer`, `Network`, `Model`
+
+#### 2. Core Components
+1. **Implement core classes** — Build the central architecture:
+   - `core/layer.py` — Dense layer with forward/backward propagation
+   - `core/network.py` — Network orchestration with layer management
+   - `core/model.py` — Top-level API with training loop
+2. **Implement activation functions** — All five activations:
+   - `activations/linear.py` — Identity function
+   - `activations/relu.py` — Rectified Linear Unit
+   - `activations/sigmoid.py` — Logistic function
+   - `activations/tanh.py` — Hyperbolic tangent
+   - `activations/softmax.py` — Normalized exponential
+3. **Implement loss functions** — All three losses:
+   - `losses/mse.py` — Mean Squared Error
+   - `losses/binary_crossentropy.py` — Binary classification
+   - `losses/categorical_crossentropy.py` — Multi-class classification
+
+### Phase 2: Supporting Components
+
+#### 1. Initializers & Regularizers
+1. **Implement initializers** — All three initialization methods:
+   - `initializers/zero.py` — Zero initialization
+   - `initializers/uniform.py` — Uniform distribution with bounds
+   - `initializers/normal.py` — Normal distribution with mean/variance
+2. **Implement regularizers** — Both regularization methods:
+   - `regularizers/l1.py` — Lasso regularization
+   - `regularizers/l2.py` — Ridge regularization
+
+#### 2. Optimizers & Utilities
+1. **Implement optimizers** — Core optimization methods:
+   - `optimizers/gradient_descent.py` — Standard gradient descent
+   - `optimizers/adam.py` — Adam optimizer (bonus feature)
+2. **Implement utilities** — Supporting functionality:
+   - `utils/normalization.py` — RMSNorm normalization (bonus)
+   - `utils/automatic_differentiation.py` — Automatic differentiation (bonus)
+   - `utils/metrics.py` — Evaluation metrics (accuracy, precision, recall)
+
+### Phase 3: Testing & Documentation
+
+#### 1. Testing Suite
+1. **Unit tests** — Test each component in isolation:
+   - `tests/test_activations.py` — Test all activation functions
+   - `tests/test_losses.py` — Test loss computations and gradients
+   - `tests/test_initializers.py` — Test weight initialization
+   - `tests/test_regularizers.py` — Test regularization penalties
+   - `tests/test_optimizers.py` — Test parameter updates
+2. **Integration tests** — Test complete model functionality:
+   - `tests/test_model.py` — Test model training and prediction
+   - `tests/test_network.py` — Test network forward/backward propagation
+
+#### 2. Documentation & Examples
+1. **API documentation** — Generate comprehensive documentation:
+   - `docs/api_reference.md` — Complete API reference
+   - `docs/tutorials/` — Getting started, building models, advanced features
+2. **Example implementations** — Create working examples:
+   - `docs/examples/classification_example.py` — Binary classification
+   - `docs/examples/regression_example.py` — Regression task
+   - `docs/examples/custom_activations.py` — Adding custom activations
+
+### Phase 4: Experiments
+
+#### 1. Experiment Setup
+1. **Data preprocessing** — Prepare the dataset:
+   - Load `global_student_placement_and_salary.csv`
+   - Encode categorical features (one-hot or label encoding)
+   - Normalize numerical features
+   - Split into train/validation sets
+2. **Experiment framework** — Set up experiment infrastructure:
+   - Create experiment notebook structure
+   - Implement visualization functions for loss curves
+   - Add weight/gradient distribution plotting
+
+#### 2. Hyperparameter Analysis
+1. **Experiment 1: Depth & Width** — Test architectural variations:
+   - Fix depth, vary width (3 configurations)
+   - Fix width, vary depth (3 configurations)
+   - Train each, plot loss curves, compare final accuracy
+2. **Experiment 2: Activation Functions** — Test activation impact:
+   - Base architecture with ≥3 layers
+   - Swap activation on one hidden layer (Linear, ReLU, Sigmoid, Tanh)
+   - Compare loss curves + weight/gradient distributions
+3. **Experiment 3: Learning Rate** — Test optimization impact:
+   - 3 different learning rates (e.g., 0.001, 0.01, 0.1)
+   - Compare loss curves + weight/gradient distributions
+4. **Experiment 4: Regularization** — Test regularization impact:
+   - No regularization vs L1 vs L2
+   - Compare loss curves + weight/gradient distributions
+5. **Experiment 5: sklearn Comparison** — Benchmark against library:
+   - Train `sklearn.neural_network.MLPClassifier` with matching hyperparameters
+   - Compare final predictions/accuracy only
+
+#### Bonus Experiments (Optional)
+1. **Experiment 6: RMSNorm** — Test normalization impact:
+   - Without vs with RMSNorm
+   - Compare loss curves + weight/gradient distributions
+2. **Experiment 7: Adam vs GD** — Test optimizer impact:
+   - Compare convergence speed between standard GD and Adam
+
+### Phase 5: Polish & Submit
+1. **Final testing** — Run complete test suite
+2. **Documentation review** — Ensure all documentation is complete
+3. **Experiment analysis** — Finalize all experiment results
+4. **Repository preparation** — Prepare for submission:
+   - Update README.md with setup and usage instructions
+   - Ensure all deliverables are included
+   - Verify code quality and style consistency
