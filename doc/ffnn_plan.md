@@ -353,7 +353,7 @@ Model.fit()
 ## Constraints & Rules
 
 ### Language & Libraries
-- **Python 3.11+** only.
+- **Python 3.13** only.
 - FFNN implementation must use **only NumPy** (or similar math libraries) — no PyTorch, TensorFlow, or Keras for the core model.
 - **sklearn** is allowed only for the comparison experiment (`MLPClassifier`) and for data preprocessing utilities.
 - **Pandas** is allowed for data loading and manipulation.
