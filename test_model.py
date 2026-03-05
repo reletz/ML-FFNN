@@ -284,6 +284,167 @@ def test_different_activations():
     
     print(f"\n{'='*60}\n")
 
+def test_weight_distribution_plotting():
+    """Test weight distribution plotting"""
+    print("=" * 60)
+    print("Test 6: Weight Distribution Plotting")
+    print("=" * 60)
+    
+    # Create and train a model
+    np.random.seed(42)
+    n_samples = 500
+    n_features = 10
+    
+    X = np.random.randn(n_samples, n_features)
+    y = (X[:, 0] + X[:, 1] > 0).astype(float).reshape(-1, 1)
+    
+    split_idx = int(0.8 * n_samples)
+    X_train, X_val = X[:split_idx], X[split_idx:]
+    y_train, y_val = y[:split_idx], y[split_idx:]
+    
+    model = Model(
+        layer_sizes=[n_features, 32, 16, 8, 1],
+        activations=[
+            get_activation('relu'),
+            get_activation('relu'),
+            get_activation('relu'),
+            get_activation('sigmoid')
+        ],
+        loss=get_loss('bce'),
+        initializer=get_initializer('xavier', gain=1.0),
+        optimizer=get_optimizer('adam', learning_rate=0.01),
+        regularizer=None
+    )
+    
+    print("\nTraining model...")
+    history = model.fit(
+        X_train, y_train,
+        X_val, y_val,
+        epochs=20,
+        batch_size=32,
+        verbose=0
+    )
+    
+    print("\nPlotting weight distributions for layers [0, 1, 2]...")
+    model.plot_weight_distribution([0, 1, 2])
+    
+    print("\nPlotting weight distributions for all layers [0, 1, 2, 3]...")
+    model.plot_weight_distribution([0, 1, 2, 3])
+    
+    print(f"{'='*60}\n")
+    
+    return model
+
+
+def test_gradient_distribution_plotting():
+    """Test gradient distribution plotting"""
+    print("=" * 60)
+    print("Test 7: Gradient Distribution Plotting")
+    print("=" * 60)
+    
+    # Create and train a model
+    np.random.seed(42)
+    n_samples = 500
+    n_features = 10
+    
+    X = np.random.randn(n_samples, n_features)
+    y = (X[:, 0] + X[:, 1] > 0).astype(float).reshape(-1, 1)
+    
+    split_idx = int(0.8 * n_samples)
+    X_train, X_val = X[:split_idx], X[split_idx:]
+    y_train, y_val = y[:split_idx], y[split_idx:]
+    
+    model = Model(
+        layer_sizes=[n_features, 32, 16, 8, 1],
+        activations=[
+            get_activation('relu'),
+            get_activation('relu'),
+            get_activation('relu'),
+            get_activation('sigmoid')
+        ],
+        loss=get_loss('bce'),
+        initializer=get_initializer('he', scale=1.0),
+        optimizer=get_optimizer('gradient_descent', learning_rate=0.01),
+        regularizer=get_regularizer('l2', lambda_=0.001)
+    )
+    
+    print("\nTraining model...")
+    history = model.fit(
+        X_train, y_train,
+        X_val, y_val,
+        epochs=20,
+        batch_size=32,
+        verbose=0
+    )
+    
+    print("\nPlotting gradient distributions for layers [0, 1, 2]...")
+    model.plot_gradient_distribution([0, 1, 2])
+    
+    print("\nPlotting gradient distributions for all layers [0, 1, 2, 3]...")
+    model.plot_gradient_distribution([0, 1, 2, 3])
+    
+    print(f"{'='*60}\n")
+    
+    return model
+
+
+def test_plotting_edge_cases():
+    """Test plotting with edge cases"""
+    print("=" * 60)
+    print("Test 8: Plotting Edge Cases")
+    print("=" * 60)
+    
+    # Create a simple model
+    np.random.seed(42)
+    X = np.random.randn(100, 5)
+    y = (X[:, 0] > 0).astype(float).reshape(-1, 1)
+    
+    model = Model(
+        layer_sizes=[5, 8, 4, 1],
+        activations=[
+            get_activation('relu'),
+            get_activation('tanh'),
+            get_activation('sigmoid')
+        ],
+        loss=get_loss('bce'),
+        initializer=get_initializer('normal', seed=42),
+        optimizer=get_optimizer('gradient_descent', learning_rate=0.01)
+    )
+    
+    # Test 1: Plot before training (should work for weights, warn for gradients)
+    print("\n1. Testing weight plot before training...")
+    model.plot_weight_distribution([0, 1])
+    
+    print("\n2. Testing gradient plot before training (should warn)...")
+    model.plot_gradient_distribution([0, 1])
+    
+    # Train model
+    split_idx = 80
+    X_train, X_val = X[:split_idx], X[split_idx:]
+    y_train, y_val = y[:split_idx], y[split_idx:]
+    
+    print("\n3. Training model...")
+    model.fit(X_train, y_train, X_val, y_val, epochs=10, batch_size=16, verbose=0)
+    
+    # Test 2: Plot single layer
+    print("\n4. Testing single layer plot...")
+    model.plot_weight_distribution([1])
+    model.plot_gradient_distribution([1])
+    
+    # Test 3: Empty list
+    print("\n5. Testing empty layer list...")
+    model.plot_weight_distribution([])
+    model.plot_gradient_distribution([])
+    
+    # Test 4: Invalid indices
+    print("\n6. Testing invalid layer indices (should warn and skip)...")
+    model.plot_weight_distribution([0, 10, 1])  # 10 is out of range
+    model.plot_gradient_distribution([0, -1, 1])  # -1 is invalid
+    
+    print(f"\n{'='*60}\n")
+    
+    return model
+
 
 if __name__ == "__main__":
     print("\n" + "=" * 60)
@@ -297,6 +458,9 @@ if __name__ == "__main__":
         test_regression()
         test_save_load()
         test_different_activations()
+        test_weight_distribution_plotting()
+        test_gradient_distribution_plotting()
+        test_plotting_edge_cases()
         
         print("\n" + "=" * 60)
         print("ALL TESTS COMPLETED!")

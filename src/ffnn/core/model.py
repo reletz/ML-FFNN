@@ -10,6 +10,7 @@ from tqdm import tqdm
 
 import numpy as np
 import pickle
+import matplotlib.pyplot as plt
 
 class Model:
     def __init__(
@@ -105,6 +106,84 @@ class Model:
     
     def evaluate(self, X: np.ndarray, y: np.ndarray) -> float:
         return self.loss_fn.compute(y, self.predict(X))
+    
+    def plot_weight_distribution(self, layer_indices: list[int]) -> None:
+        num_layers = len(layer_indices)
+        if num_layers == 0:
+            print("No layers specified.")
+            return
+
+        fig, axes = plt.subplots(1, num_layers, figsize=(5 * num_layers, 4))
+        if num_layers == 1:
+            axes = [axes]
+        
+        for idx, layer_idx in enumerate(layer_indices):
+            if layer_idx < 0 or layer_idx >= len(self.network.layers):
+                print(f"Warning: Layer index {layer_idx} out of range. Skipping.")
+                continue
+            
+            layer = self.network.layers[layer_idx]
+            weights = layer.weights.flatten()
+
+            axes[idx].hist(weights, bins=50, alpha=0.7, edgecolor='black')
+            axes[idx].set_title(f'Layer {layer_idx} Weights')
+            axes[idx].set_xlabel('Weight Value')
+            axes[idx].set_ylabel('Frequency')
+            axes[idx].grid(True, alpha=0.3)
+
+            mean_val = np.mean(weights)
+            std_val = np.std(weights)
+            axes[idx].axvline(mean_val, color='r', linestyle='--', 
+                            label=f'Mean: {mean_val:.4f}')
+            axes[idx].axvline(mean_val + std_val, color='g', linestyle='--', 
+                            label=f'Std: {std_val:.4f}')
+            axes[idx].axvline(mean_val - std_val, color='g', linestyle='--')
+            axes[idx].legend()
+        
+        plt.tight_layout()
+        plt.show()
+    
+    def plot_gradient_distribution(self, layer_indices: list[int]) -> None:
+        num_layers = len(layer_indices)
+        if num_layers == 0:
+            print("No layers specified.")
+            return
+
+        fig, axes = plt.subplots(1, num_layers, figsize=(5 * num_layers, 4))
+        if num_layers == 1:
+            axes = [axes]
+        
+        for idx, layer_idx in enumerate(layer_indices):
+            if layer_idx < 0 or layer_idx >= len(self.network.layers):
+                print(f"Warning: Layer index {layer_idx} out of range. Skipping.")
+                continue
+            
+            layer = self.network.layers[layer_idx]
+            
+            if layer.weight_gradients is None:
+                print(f"Warning: No gradients computed for layer {layer_idx} yet. "
+                      "Run a forward and backward pass first.")
+                continue
+            
+            gradients = layer.weight_gradients.flatten()
+            
+            axes[idx].hist(gradients, bins=50, alpha=0.7, edgecolor='black', color='orange')
+            axes[idx].set_title(f'Layer {layer_idx} Gradients')
+            axes[idx].set_xlabel('Gradient Value')
+            axes[idx].set_ylabel('Frequency')
+            axes[idx].grid(True, alpha=0.3)
+
+            mean_val = np.mean(gradients)
+            std_val = np.std(gradients)
+            axes[idx].axvline(mean_val, color='r', linestyle='--', 
+                            label=f'Mean: {mean_val:.4e}')
+            axes[idx].axvline(mean_val + std_val, color='g', linestyle='--', 
+                            label=f'Std: {std_val:.4e}')
+            axes[idx].axvline(mean_val - std_val, color='g', linestyle='--')
+            axes[idx].legend()
+        
+        plt.tight_layout()
+        plt.show()
     
     def save(self, filepath: str):
         """Save weights, biases, and model config to file"""
