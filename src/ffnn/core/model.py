@@ -53,8 +53,10 @@ class Model:
         epoch_iteator = range(epochs)
         if verbose == 1:
             epoch_iterator = tqdm(epoch_iteator, desc="Training")
+        else:
+            epoch_iterator = range(epochs)
 
-        for epoch in range(epochs):
+        for epoch in epoch_iterator:
             mini_batches = self._get_mini_batches(X_train, y_train, batch_size)
             epoch_loss = 0
             for X_batch, y_batch in mini_batches:
