@@ -46,8 +46,12 @@ class Model:
             y_val: np.ndarray,
             epochs: int,
             batch_size: int,
-            verbose: int
+            verbose: int,
+            learning_rate: Optional[float] = None
         ) -> dict[list[float],list[float]]:
+
+        if learning_rate is not None:
+            self.optimizer.set_learning_rate(learning_rate)
 
         history:dict = {"train_loss": [], "val_loss": []}
         train_samples_num = X_train.shape[0]
