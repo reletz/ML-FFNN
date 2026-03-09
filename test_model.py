@@ -47,7 +47,8 @@ def test_basic_model():
         X_val, y_val,
         epochs=50,
         batch_size=32,
-        verbose=1
+        verbose=1,
+        learning_rate=0.01,
     )
     
     # Evaluate
@@ -122,7 +123,8 @@ def test_multiclass_classification():
         X_val, y_val,
         epochs=30,
         batch_size=32,
-        verbose=1
+        verbose=1,
+        learning_rate=0.01,
     )
     
     # Evaluate
@@ -179,7 +181,8 @@ def test_regression():
         X_val, y_val,
         epochs=30,
         batch_size=32,
-        verbose=1
+        verbose=1,
+        learning_rate=0.01,
     )
     
     # Evaluate
@@ -276,7 +279,8 @@ def test_different_activations():
             X_val, y_val,
             epochs=20,
             batch_size=32,
-            verbose=0
+            verbose=0,
+            learning_rate=0.01,
         )
         
         final_val_loss = history['val_loss'][-1]
@@ -322,7 +326,8 @@ def test_weight_distribution_plotting():
         X_val, y_val,
         epochs=20,
         batch_size=32,
-        verbose=0
+        verbose=0,
+        learning_rate=0.01,
     )
     
     print("\nPlotting weight distributions for layers [0, 1, 2]...")
@@ -374,7 +379,8 @@ def test_gradient_distribution_plotting():
         X_val, y_val,
         epochs=20,
         batch_size=32,
-        verbose=0
+        verbose=0,
+        learning_rate=0.01,
     )
     
     print("\nPlotting gradient distributions for layers [0, 1, 2]...")
@@ -424,7 +430,7 @@ def test_plotting_edge_cases():
     y_train, y_val = y[:split_idx], y[split_idx:]
     
     print("\n3. Training model...")
-    model.fit(X_train, y_train, X_val, y_val, epochs=10, batch_size=16, verbose=0)
+    model.fit(X_train, y_train, X_val, y_val, epochs=10, batch_size=16, verbose=0, learning_rate=0.01)
     
     # Test 2: Plot single layer
     print("\n4. Testing single layer plot...")

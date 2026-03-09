@@ -55,9 +55,9 @@ class Model:
 
         history:dict = {"train_loss": [], "val_loss": []}
         train_samples_num = X_train.shape[0]
-        epoch_iteator = range(epochs)
+        epoch_itetator = range(epochs)
         if verbose == 1:
-            epoch_iterator = tqdm(epoch_iteator, desc="Training")
+            epoch_iterator = tqdm(epoch_itetator, desc="Training")
         else:
             epoch_iterator = range(epochs)
 
@@ -67,19 +67,23 @@ class Model:
             for X_batch, y_batch in mini_batches:
                 # Forward pass
                 preds = self.predict(X_batch)
-                batch_loss = self.evaluate(X_batch, y_batch)
-                epoch_loss += batch_loss * X_batch.shape[0]
+                batch_loss = self.loss_fn.compute(y_batch, preds)
 
                 # backward pass
                 loss_grad = self.loss_fn.gradient(y_batch, preds)
                 self.network.backward(loss_grad)
 
                 if self.regularizer is not None:
+                    reg_penalty = 0
                     for layer in self.network.layers:
                         if hasattr(layer, 'weights') and layer.weights is not None:
                             reg_grad = self.regularizer.gradient(layer.weights)
+                            reg_penalty += self.regularizer.penalty(layer.weights)
                             layer.weight_gradients += reg_grad
+                            batch_loss += reg_penalty
                 
+                epoch_loss += batch_loss + X_batch.shape[0]
+
                 params = []
                 grads = []
                 for layer in self.network.layers:
