@@ -13,7 +13,9 @@ class Optimizer:
             Updated parameters (modified in-place or returned)
         """
         raise NotImplementedError("Subclasses must implement update()")
-
+    
+    def set_learning_rate(self, learning_rate):
+        self.learning_rate = learning_rate
 
 class GradientDescent(Optimizer):
     """Standard gradient descent optimizer.
