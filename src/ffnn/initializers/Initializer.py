@@ -55,3 +55,38 @@ class Normal(Initializer):
             NumPy array with values sampled from N(mean, variance)
         """
         return self.rng.normal(self.mean, self.std, shape)
+
+# Bonus
+class Xavier(Initializer):
+    """
+    Samples weights from a uniform distribution within 
+    [-sqrt(6/fan_in), sqrt(6/fan_in)] where fan_in is the number
+    of input units in the weight tensor
+    
+    Args:
+        gain: Scaling factor (default: 1.0)
+    """
+    def __init__(self, gain=1.0):
+        self.gain = gain
+    
+    def initialize(self, shape):
+        fan_in, fan_out = shape[0], shape[1]
+        limit = self.gain * np.sqrt(6 / (fan_in + fan_out))
+        return np.random.uniform(-limit, limit, shape)
+
+
+class He(Initializer):
+    """
+    Samples weights from a normal distribution with 
+    mean 0 and standard deviation sqrt(2/fan_in)
+    
+    Args:
+        scale: Scaling factor (default: 1.0)
+    """
+    def __init__(self, scale=1.0):
+        self.scale = scale
+    
+    def initialize(self, shape):
+        fan_in = shape[0]
+        std = self.scale * np.sqrt(2 / fan_in)
+        return np.random.normal(0, std, shape)
