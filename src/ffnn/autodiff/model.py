@@ -21,6 +21,9 @@ class ADModel:
     optimizer    : Optimizer   e.g. GradientDescent(lr=0.01) or Adam()
     initializer  : Initializer weight initializer (default: Normal(0, 0.01))
     regularizer  : Regularizer optional L1/L2 regularizer
+    use_rmsnorm  : bool        apply RMSNorm on hidden layers
+    rmsnorm_eps  : float       epsilon for RMSNorm stability
+    rmsnorm_on_output : bool   whether RMSNorm is also applied on output layer
     """
 
     def __init__(
@@ -31,6 +34,9 @@ class ADModel:
         optimizer: Optimizer,
         initializer: Initializer = None,
         regularizer: Optional[Regularizer] = None,
+        use_rmsnorm: bool = False,
+        rmsnorm_eps: float = 1e-8,
+        rmsnorm_on_output: bool = False,
     ) -> None:
         if len(activations) != len(layer_sizes) - 1:
             raise ValueError(
@@ -42,15 +48,32 @@ class ADModel:
             initializer = Normal(mean=0.0, variance=0.01)
 
         self.network = ADNetwork()
-        for i in range(len(layer_sizes) - 1):
-            self.network.add_layer(
-                ADLayer(layer_sizes[i], layer_sizes[i + 1], activations[i], initializer)
-            )
-
         self.loss_name: str = loss
         self._loss_fn = get_loss(loss)
         self.optimizer: Optimizer = optimizer
         self.regularizer: Optional[Regularizer] = regularizer
+
+        self.use_rmsnorm = use_rmsnorm
+        self.rmsnorm_eps = rmsnorm_eps
+        self.rmsnorm_on_output = rmsnorm_on_output
+
+        for i in range(len(layer_sizes) - 1):
+            is_output_layer = (i == len(layer_sizes) - 2)
+
+            layer_use_rmsnorm = use_rmsnorm and (
+                rmsnorm_on_output or not is_output_layer
+            )
+
+            self.network.add_layer(
+                ADLayer(
+                    input_size=layer_sizes[i],
+                    output_size=layer_sizes[i + 1],
+                    activation=activations[i],
+                    init_fn=initializer,
+                    use_rmsnorm=layer_use_rmsnorm,
+                    rmsnorm_eps=rmsnorm_eps,
+                )
+            )
 
     def fit(
         self,
@@ -219,4 +242,8 @@ class ADModel:
         return batches
 
     def __repr__(self) -> str:
-        return f"ADModel(loss='{self.loss_name}', network={self.network})"
+        return (
+            f"ADModel(loss='{self.loss_name}', "
+            f"use_rmsnorm={self.use_rmsnorm}, "
+            f"network={self.network})"
+        )
