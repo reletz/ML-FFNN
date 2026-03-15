@@ -82,7 +82,7 @@ class Model:
                             layer.weight_gradients += reg_grad
                             batch_loss += reg_penalty
                 
-                epoch_loss += batch_loss + X_batch.shape[0]
+                epoch_loss += batch_loss * X_batch.shape[0]
 
                 params = []
                 grads = []
