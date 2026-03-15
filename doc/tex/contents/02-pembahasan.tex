@@ -1,0 +1,164 @@
+% !TEX root = ../main.tex
+
+\chapter{Pembahasan}
+
+\section{Penjelasan Implementasi}
+
+\subsection{Deskripsi Kelas}
+
+Implementasi FFNN terdiri dari beberapa kelas utama sebagai berikut:
+
+\subsubsection{Kelas \texttt{Layer}}
+\lipsum[1]
+
+\begin{table}[H]
+    \centering
+    \caption{Atribut Kelas \texttt{Layer}}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Atribut} & \textbf{Tipe} & \textbf{Deskripsi} \\
+        \midrule
+        \texttt{weights} & \texttt{np.ndarray} & Matriks bobot layer \\
+        \texttt{bias} & \texttt{np.ndarray} & Vektor bias layer \\
+        \texttt{grad\_weights} & \texttt{np.ndarray} & Gradien bobot layer \\
+        \texttt{grad\_bias} & \texttt{np.ndarray} & Gradien bias layer \\
+        \texttt{activation} & \texttt{str} & Nama fungsi aktivasi \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:layer-attr}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Method Kelas \texttt{Layer}}
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Method} & \textbf{Deskripsi} \\
+        \midrule
+        \texttt{forward(x)} & Menghitung output layer untuk input \texttt{x} \\
+        \texttt{backward(delta)} & Menghitung gradien layer \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:layer-method}
+\end{table}
+
+\subsubsection{Kelas \texttt{FFNN}}
+\lipsum[1]
+
+\begin{table}[H]
+    \centering
+    \caption{Atribut Kelas \texttt{FFNN}}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Atribut} & \textbf{Tipe} & \textbf{Deskripsi} \\
+        \midrule
+        \texttt{layers} & \texttt{list[Layer]} & Daftar layer pada model \\
+        \texttt{loss\_fn} & \texttt{str} & Nama fungsi loss \\
+        \texttt{history} & \texttt{dict} & Histori training dan validation loss \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:ffnn-attr}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Method Kelas \texttt{FFNN}}
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Method} & \textbf{Deskripsi} \\
+        \midrule
+        \texttt{forward(X)} & Melakukan forward propagation \\
+        \texttt{backward(y\_true)} & Melakukan backward propagation \\
+        \texttt{fit(...)} & Melatih model \\
+        \texttt{predict(X)} & Melakukan prediksi \\
+        \texttt{plot\_weight\_dist(layers)} & Menampilkan distribusi bobot \\
+        \texttt{plot\_grad\_dist(layers)} & Menampilkan distribusi gradien \\
+        \texttt{save(path)} & Menyimpan model ke file \\
+        \texttt{load(path)} & Memuat model dari file \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:ffnn-method}
+\end{table}
+
+% ----------------------------------------------------------------
+\section{Forward Propagation}
+
+Forward propagation menghitung output dari setiap layer secara berurutan dari input layer hingga output layer. Untuk setiap layer $l$, perhitungannya adalah sebagai berikut:
+
+\begin{equation}
+    z^{(l)} = W^{(l)} a^{(l-1)} + b^{(l)}
+    \label{eq:linear}
+\end{equation}
+
+\begin{equation}
+    a^{(l)} = f^{(l)}(z^{(l)})
+    \label{eq:activation}
+\end{equation}
+
+di mana $W^{(l)}$ adalah matriks bobot, $b^{(l)}$ adalah vektor bias, $f^{(l)}$ adalah fungsi aktivasi, dan $a^{(0)} = X$ adalah input.
+
+\subsection{Fungsi Aktivasi}
+
+Berikut fungsi aktivasi yang diimplementasikan:
+
+\begin{table}[H]
+    \centering
+    \caption{Fungsi Aktivasi}
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Nama} & \textbf{Definisi} \\
+        \midrule
+        Linear   & $f(x) = x$ \\
+        ReLU     & $f(x) = \max(0, x)$ \\
+        Sigmoid  & $f(x) = \frac{1}{1 + e^{-x}}$ \\
+        Tanh     & $f(x) = \tanh(x)$ \\
+        Softmax  & $f(x_i) = \frac{e^{x_i}}{\sum_j e^{x_j}}$ \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:activation}
+\end{table}
+
+% ----------------------------------------------------------------
+\section{Backward Propagation dan Weight Update}
+
+Backward propagation menghitung gradien setiap bobot terhadap fungsi loss menggunakan \textit{chain rule}.
+
+\subsection{Chain Rule}
+
+Gradien loss $\mathcal{L}$ terhadap bobot $W^{(l)}$ dihitung sebagai:
+
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial W^{(l)}} = 
+    \frac{\partial \mathcal{L}}{\partial a^{(l)}} \cdot
+    \frac{\partial a^{(l)}}{\partial z^{(l)}} \cdot
+    \frac{\partial z^{(l)}}{\partial W^{(l)}}
+    \label{eq:chainrule}
+\end{equation}
+
+\subsection{Fungsi Loss}
+
+\begin{table}[H]
+    \centering
+    \caption{Fungsi Loss dan Turunannya}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Nama} & \textbf{Definisi} & \textbf{Turunan terhadap $\hat{y}$} \\
+        \midrule
+        MSE & $\frac{1}{n}\sum(y - \hat{y})^2$ & $\frac{-2(y - \hat{y})}{n}$ \\
+        Binary CE & $-\frac{1}{n}\sum y\log\hat{y} + (1-y)\log(1-\hat{y})$ & $\frac{\hat{y} - y}{n\hat{y}(1-\hat{y})}$ \\
+        Categorical CE & $-\frac{1}{n}\sum_k y_k \log \hat{y}_k$ & $\frac{-y_k}{n\hat{y}_k}$ \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:loss}
+\end{table}
+
+\subsection{Weight Update}
+
+Setelah gradien dihitung, bobot diperbarui menggunakan gradient descent:
+
+\begin{equation}
+    W^{(l)} \leftarrow W^{(l)} - \eta \frac{\partial \mathcal{L}}{\partial W^{(l)}}
+    \label{eq:weight-update}
+\end{equation}
+
+di mana $\eta$ adalah learning rate.

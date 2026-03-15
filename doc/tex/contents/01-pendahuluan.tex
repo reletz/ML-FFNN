@@ -1,0 +1,42 @@
+% !TEX root = ../main.tex
+
+\chapter{Deskripsi Persoalan}
+
+\section{Latar Belakang}
+\lipsum[1]
+
+\section{Tujuan}
+Tugas ini bertujuan untuk mengimplementasikan Feedforward Neural Network (FFNN) \textit{from scratch} tanpa menggunakan library deep learning yang sudah ada. Secara spesifik, tujuan tugas ini adalah:
+
+\begin{enumerate}
+    \item Memahami mekanisme \textit{forward propagation} pada FFNN.
+    \item Memahami mekanisme \textit{backward propagation} dan perhitungan gradien menggunakan \textit{chain rule}.
+    \item Menganalisis pengaruh berbagai hyperparameter terhadap performa model.
+\end{enumerate}
+
+\section{Dataset}
+Dataset yang digunakan adalah \textbf{Global Student Placement \& Salary Dataset}, yang berisi data performa akademik mahasiswa beserta \textit{outcome} penempatan kerja dan gaji setelah lulus. Berikut deskripsi fitur-fitur yang digunakan:
+
+\begin{table}[H]
+    \centering
+    \caption{Deskripsi Fitur Dataset}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Kolom} & \textbf{Deskripsi} & \textbf{Tipe} \\
+        \midrule
+        \texttt{cgpa} & Cumulative Grade Point Average (skala 4.0--10.0) & Float \\
+        \texttt{backlogs} & Jumlah mata kuliah yang belum lulus & Integer \\
+        \texttt{college\_tier} & Tingkatan institusi & Categorical \\
+        \texttt{country} & Negara kelulusan & Categorical \\
+        \texttt{university\_ranking\_band} & Kategori peringkat global universitas & Categorical \\
+        \texttt{internship\_count} & Jumlah internship yang telah diselesaikan & Integer \\
+        \texttt{aptitude\_score} & Skor tes kemampuan kuantitatif & Integer \\
+        \texttt{communication\_score} & Skor kemampuan komunikasi & Integer \\
+        \texttt{specialization} & Bidang akademik & Categorical \\
+        \texttt{industry} & Industri tempat bekerja & Categorical \\
+        \texttt{internship\_quality\_score} & Skor kualitas pengalaman internship & Float \\
+        \texttt{placement\_status} & Status penempatan kerja (target) & Categorical \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:dataset}
+\end{table}

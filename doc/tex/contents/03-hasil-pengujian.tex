@@ -1,0 +1,132 @@
+% !TEX root = ../main.tex
+
+\chapter{Hasil Pengujian}
+
+% ----------------------------------------------------------------
+\section{Pengaruh \textit{Depth} dan \textit{Width}}
+
+\subsection{Variasi \textit{Width} (Depth Tetap)}
+
+\lipsum[1]
+
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Width}
+    \begin{tabular}{llll}
+        \toprule
+        \textbf{Konfigurasi} & \textbf{Arsitektur} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        Width kecil  & [16, 16, 16] & -- & -- \\
+        Width sedang & [64, 64, 64] & -- & -- \\
+        Width besar  & [256, 256, 256] & -- & -- \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:width}
+\end{table}
+
+% Tambahkan gambar grafik loss di sini
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{width_loss.png}
+%     \caption{Grafik training dan validation loss variasi width}
+%     \label{fig:width-loss}
+% \end{figure}
+
+\subsection{Variasi \textit{Depth} (Width Tetap)}
+
+\lipsum[1]
+
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Depth}
+    \begin{tabular}{llll}
+        \toprule
+        \textbf{Konfigurasi} & \textbf{Arsitektur} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        Shallow & [64, 64] & -- & -- \\
+        Medium  & [64, 64, 64, 64] & -- & -- \\
+        Deep    & [64, 64, 64, 64, 64, 64] & -- & -- \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:depth}
+\end{table}
+
+% ----------------------------------------------------------------
+\section{Pengaruh Fungsi Aktivasi}
+
+\lipsum[1]
+
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Fungsi Aktivasi}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Fungsi Aktivasi} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        Linear  & -- & -- \\
+        ReLU    & -- & -- \\
+        Sigmoid & -- & -- \\
+        Tanh    & -- & -- \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:activation-exp}
+\end{table}
+
+% ----------------------------------------------------------------
+\section{Pengaruh \textit{Learning Rate}}
+
+\lipsum[1]
+
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Learning Rate}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Learning Rate} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        $\eta = 0.001$ & -- & -- \\
+        $\eta = 0.01$  & -- & -- \\
+        $\eta = 0.1$   & -- & -- \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:lr}
+\end{table}
+
+% ----------------------------------------------------------------
+\section{Pengaruh Regularisasi}
+
+\lipsum[1]
+
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Regularisasi}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Regularisasi} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        Tanpa regularisasi & -- & -- \\
+        L1 & -- & -- \\
+        L2 & -- & -- \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:reg}
+\end{table}
+
+% ----------------------------------------------------------------
+\section{Perbandingan dengan \textit{sklearn} MLP}
+
+\lipsum[1]
+
+\begin{table}[H]
+    \centering
+    \caption{Perbandingan Hasil Prediksi}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Model} & \textbf{Akurasi} & \textbf{Loss} \\
+        \midrule
+        Implementasi sendiri & -- & -- \\
+        sklearn \texttt{MLPClassifier} & -- & -- \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:sklearn}
+\end{table}

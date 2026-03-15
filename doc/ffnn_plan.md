@@ -5,7 +5,8 @@
 ```
 Tubes1-FFNN/
 ├── doc/                        # Reports and documentation
-│   └── ffnn_plan.md
+│   ├── ffnn_plan.md
+│   └── tex/                    # LaTeX source files for the report
 ├── src/
 │   ├── ffnn/                   # Core FFNN library (from-scratch)
 │   │   ├── __init__.py
@@ -13,35 +14,26 @@ Tubes1-FFNN/
 │   │   │   ├── __init__.py
 │   │   │   ├── model.py        # High-level Model class
 │   │   │   ├── layer.py        # Dense layer implementation
-│   │   │   └── network.py      # Network orchestration
+│   │   │   ├── network.py      # Network orchestration
+│   │   │   └── rmsnorm.py      # RMSNorm implementation
 │   │   ├── activations/
 │   │   │   ├── __init__.py     # Base Activation class + registry
-│   │   │   ├── linear.py
-│   │   │   ├── relu.py
-│   │   │   ├── sigmoid.py
-│   │   │   ├── tanh.py
-│   │   │   └── softmax.py
+│   │   │   └── Activation.py
 │   │   ├── losses/
 │   │   │   ├── __init__.py     # Base Loss class + registry
-│   │   │   ├── mse.py
-│   │   │   ├── binary_crossentropy.py
-│   │   │   └── categorical_crossentropy.py
+│   │   │   └── Loss.py
 │   │   ├── initializers/
 │   │   │   ├── __init__.py     # Base Initializer class + registry
-│   │   │   ├── zero.py
-│   │   │   ├── uniform.py
-│   │   │   └── normal.py
+│   │   │   └── Initializer.py
 │   │   ├── regularizers/
 │   │   │   ├── __init__.py     # Base Regularizer class + registry
-│   │   │   ├── l1.py
-│   │   │   └── l2.py
+│   │   │   └── Regularizer.py
 │   │   ├── optimizers/
 │   │   │   ├── __init__.py     # Base Optimizer class + registry
-│   │   │   ├── gradient_descent.py
-│   │   │   └── adam.py         # (bonus)
+│   │   │   └── Optimizer.py
 │   │   ├── utils/
 │   │       ├── __init__.py
-│   │       ├── normalization.py          # RMSNorm (bonus)
+│   │       ├── normalization.py          # Data normalization utilities
 │   │       └── metrics.py                # Evaluation metrics
 │   │   └── autodiff/                     # Automatic Differentiation (40% bonus)
 │   │       ├── __init__.py
@@ -49,11 +41,15 @@ Tubes1-FFNN/
 │   │       ├── ops.py                    # Differentiable operations
 │   │       ├── layer.py                  # AD-based Layer implementation
 │   │       ├── network.py                # AD-based Network
-│   │       └── model.py                  # AD-based Model (top-level API)
+│   │       ├── model.py                  # AD-based Model (top-level API)
+│   │       └── rmsnorm.py                # AD-based RMSNorm
 │   ├── data/
 │   │   └── global_student_placement_and_salary.csv
 │   └── notebook/
 │       └── experiments.ipynb   # All hyperparameter experiments
+├── test_model.py               # Unified test module
+├── pyproject.toml
+├── requirements.txt
 ├── LICENSE
 └── README.md
 ```
@@ -249,14 +245,14 @@ This is the central module that ties everything together.
 - `plot_weight_distribution(layer_indices)` — Plot histograms of weight values for specified layers.
 - `plot_gradient_distribution(layer_indices)` — Plot histograms of gradient values for specified layers.
 
+#### `rmsnorm.py` (bonus)
+- Implements RMS normalization: `x_norm = x / sqrt(mean(x²) + ε) * γ`
+- Applied between layers during forward pass.
+- Must support manual backpropagation through the normalization operation.
+
 ---
 
 ### 7. `src/ffnn/utils/`
-
-#### `normalization.py` (bonus — RMSNorm)
-- Implements RMS normalization: `x_norm = x / sqrt(mean(x²) + ε) * γ`
-- Applied between layers during forward pass.
-- Must support backpropagation through the normalization operation.
 
 #### `metrics.py`
 - Evaluation metrics: accuracy, precision, recall, F1-score.
@@ -367,6 +363,16 @@ Fungsi-fungsi yang beroperasi pada Tensor dan mendefinisikan backward pass.
 
 **Perbedaan dengan `core/network.py`:**
 - **TIDAK ADA method `backward()`!** Gradient propagation otomatis via `loss.backward()`.
+
+---
+
+#### `rmsnorm.py` — AD-based RMSNorm
+
+**Class: `ADRMSNorm`**
+- Implements RMS normalization using Tensor operations.
+- `x_norm = x / sqrt(mean(x²) + ε) * γ`
+- `γ` (gamma) is a trainable parameter wrapped in naturally tracking `Tensor`.
+- Gradient propagation is automatically handled by Autodiff operations.
 
 ---
 
@@ -558,56 +564,34 @@ Model.fit()
    - `core/network.py` — Network orchestration with layer management
    - `core/model.py` — Top-level API with training loop
 2. **Implement activation functions** — All five activations:
-   - `activations/linear.py` — Identity function
-   - `activations/relu.py` — Rectified Linear Unit
-   - `activations/sigmoid.py` — Logistic function
-   - `activations/tanh.py` — Hyperbolic tangent
-   - `activations/softmax.py` — Normalized exponential
+   - `activations/Activation.py` — Linear, ReLU, Sigmoid, Tanh, Softmax
 3. **Implement loss functions** — All three losses:
-   - `losses/mse.py` — Mean Squared Error
-   - `losses/binary_crossentropy.py` — Binary classification
-   - `losses/categorical_crossentropy.py` — Multi-class classification
+   - `losses/Loss.py` — MSE, Binary cross-entropy, Categorical cross-entropy
 
 ### Phase 2: Supporting Components
 
 #### 1. Initializers & Regularizers
 1. **Implement initializers** — All three initialization methods:
-   - `initializers/zero.py` — Zero initialization
-   - `initializers/uniform.py` — Uniform distribution with bounds
-   - `initializers/normal.py` — Normal distribution with mean/variance
+   - `initializers/Initializer.py` — Zero, Uniform, Normal
 2. **Implement regularizers** — Both regularization methods:
-   - `regularizers/l1.py` — Lasso regularization
-   - `regularizers/l2.py` — Ridge regularization
+   - `regularizers/Regularizer.py` — L1, L2
 
 #### 2. Optimizers & Utilities
 1. **Implement optimizers** — Core optimization methods:
-   - `optimizers/gradient_descent.py` — Standard gradient descent
-   - `optimizers/adam.py` — Adam optimizer (bonus feature)
+   - `optimizers/Optimizer.py` — Gradient Descent and Adam
 2. **Implement utilities** — Supporting functionality:
-   - `utils/normalization.py` — RMSNorm normalization (bonus)
+   - `core/rmsnorm.py` — RMSNorm normalization (bonus)
    - `utils/metrics.py` — Evaluation metrics (accuracy, precision, recall)
 
 ### Phase 3: Testing & Documentation
 
 #### 1. Testing Suite
-1. **Unit tests** — Test each component in isolation:
-   - `tests/test_activations.py` — Test all activation functions
-   - `tests/test_losses.py` — Test loss computations and gradients
-   - `tests/test_initializers.py` — Test weight initialization
-   - `tests/test_regularizers.py` — Test regularization penalties
-   - `tests/test_optimizers.py` — Test parameter updates
-2. **Integration tests** — Test complete model functionality:
-   - `tests/test_model.py` — Test model training and prediction
-   - `tests/test_network.py` — Test network forward/backward propagation
+1. **Unified Test Module** — Test components and complete model functionality in one place:
+   - `test_model.py` — End-to-end and component tests for training, predictions, activations, losses, and network operations
 
 #### 2. Documentation & Examples
-1. **API documentation** — Generate comprehensive documentation:
-   - `docs/api_reference.md` — Complete API reference
-   - `docs/tutorials/` — Getting started, building models, advanced features
-2. **Example implementations** — Create working examples:
-   - `docs/examples/classification_example.py` — Binary classification
-   - `docs/examples/regression_example.py` — Regression task
-   - `docs/examples/custom_activations.py` — Adding custom activations
+1. **Technical Report** — Comprehensive documentation via LaTeX:
+   - `doc/tex/` — Source files for the formal PDF report detailing the methodology, architecture, and experiments
 
 ### Phase 4: Experiments
 
