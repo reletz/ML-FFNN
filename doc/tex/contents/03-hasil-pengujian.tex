@@ -7,67 +7,212 @@
 
 \subsection{Variasi \textit{Width} (Depth Tetap)}
 
+\subsubsection{Implementasi FFNN}
+
 \lipsum[1]
 
 \begin{table}[H]
     \centering
-    \caption{Hasil Prediksi Variasi Width}
+    \caption{Hasil Prediksi Variasi Width — Implementasi FFNN}
     \begin{tabular}{llll}
         \toprule
         \textbf{Konfigurasi} & \textbf{Arsitektur} & \textbf{Train Loss} & \textbf{Val Loss} \\
         \midrule
-        Width kecil  & [28, 16, 8, 1] & 0.4820 & 0.5056 \\
-        Width sedang & [28, 32, 16, 1] & 0.4735 & 0.5124  \\
+        Width kecil  & [28, 16, 8, 1]  & 0.4800 & 0.5082 \\
+        Width sedang & [28, 32, 16, 1] & 0.4733 & 0.5100 \\
+        Width besar  & [28, 64, 32, 1] & 0.4652 & 0.5113 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:width-ffnn}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{width_loss.png}
+    \includegraphics[width=0.4\textwidth]{width_val.png}
+    \caption{Grafik training dan validation loss variasi width — Implementasi FFNN}
+    \label{fig:width-loss-ffnn}
+\end{figure}
+
+\subsubsection{Implementasi Autodiff}
+
+\lipsum[1]
+
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Width — Implementasi Autodiff}
+    \begin{tabular}{llll}
+        \toprule
+        \textbf{Konfigurasi} & \textbf{Arsitektur} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        Width kecil  & [28, 16, 8, 1]  & 0.4820 & 0.5056 \\
+        Width sedang & [28, 32, 16, 1] & 0.4735 & 0.5124 \\
         Width besar  & [28, 64, 32, 1] & 0.4644 & 0.5091 \\
         \bottomrule
     \end{tabular}
-    \label{tab:width}
+    \label{tab:width-autodiff}
 \end{table}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{ad_width_loss.png}
     \includegraphics[width=0.4\textwidth]{ad_width_val.png}
-    \caption{Grafik training dan validation loss variasi width}
-    \label{fig:width-loss}
+    \caption{Grafik training dan validation loss variasi width — Implementasi Autodiff}
+    \label{fig:width-loss-autodiff}
 \end{figure}
 
+
 \subsection{Variasi \textit{Depth} (Width Tetap)}
+
+\subsubsection{Implementasi FFNN}
 
 \lipsum[1]
 
 \begin{table}[H]
     \centering
-    \caption{Hasil Prediksi Variasi Depth}
+    \caption{Hasil Prediksi Variasi Depth — Implementasi FFNN}
     \begin{tabular}{llll}
         \toprule
         \textbf{Konfigurasi} & \textbf{Arsitektur} & \textbf{Train Loss} & \textbf{Val Loss} \\
         \midrule
-        Shallow & [28, 32, 1] & 0.4787 & 0.5062 \\
-        Medium  & [28, 32, 32, 1] & 0.4684 & 0.5160 \\
-        Deep    & [28, 32, 32, 32, 1] & 0.4644 & 0.5162 \\
+        Shallow & [28, 32, 1]          & 0.4782 & 0.5087 \\
+        Medium  & [28, 32, 32, 1]      & 0.4732 & 0.5143 \\
+        Deep    & [28, 32, 32, 32, 1]  & 0.4689 & 0.5106 \\
         \bottomrule
     \end{tabular}
-    \label{tab:depth}
+    \label{tab:depth-ffnn}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{depth_loss.png}
+    \includegraphics[width=0.4\textwidth]{depth_val.png}
+    \caption{Grafik training dan validation loss variasi depth — Implementasi FFNN}
+    \label{fig:depth-loss-ffnn}
+\end{figure}
+
+\subsubsection{Implementasi Autodiff}
+
+\lipsum[1]
+
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Depth — Implementasi Autodiff}
+    \begin{tabular}{llll}
+        \toprule
+        \textbf{Konfigurasi} & \textbf{Arsitektur} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        Shallow & [28, 32, 1]          & 0.4787 & 0.5062 \\
+        Medium  & [28, 32, 32, 1]      & 0.4684 & 0.5160 \\
+        Deep    & [28, 32, 32, 32, 1]  & 0.4644 & 0.5162 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:depth-autodiff}
 \end{table}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{ad_depth_loss.png}
     \includegraphics[width=0.4\textwidth]{ad_depth_val.png}
-    \caption{Grafik training dan validation loss variasi depth}
-    \label{fig:depth-loss}
+    \caption{Grafik training dan validation loss variasi depth — Implementasi Autodiff}
+    \label{fig:depth-loss-autodiff}
 \end{figure}
 
 
 % ----------------------------------------------------------------
 \section{Pengaruh Fungsi Aktivasi}
 
+\subsubsection{Implementasi FFNN}
+
 \lipsum[1]
 
 \begin{table}[H]
     \centering
-    \caption{Hasil Prediksi Variasi Fungsi Aktivasi}
+    \caption{Hasil Prediksi Variasi Fungsi Aktivasi — Implementasi FFNN}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Fungsi Aktivasi} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        Linear  & 0.4815 & 0.5051 \\
+        ReLU    & 0.4735 & 0.5069 \\
+        Sigmoid & 0.4869 & 0.5018 \\
+        Tanh    & 0.4787 & 0.5087 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:activation-ffnn}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{act_loss.png}
+    \includegraphics[width=0.4\textwidth]{act_val.png}
+    \caption{Grafik training dan validation loss variasi fungsi aktivasi — Implementasi FFNN}
+    \label{fig:activation-loss-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{act_weight_lin.png}
+    \caption{Grafik distribusi bobot variasi fungsi aktivasi linear — Implementasi FFNN}
+    \label{fig:activation-weight-dist-lin-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{act_weight_relu.png}
+    \caption{Grafik distribusi bobot variasi fungsi aktivasi relu — Implementasi FFNN}
+    \label{fig:activation-weight-dist-relu-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{act_weight_sig.png}
+    \caption{Grafik distribusi bobot variasi fungsi aktivasi sigmoid — Implementasi FFNN}
+    \label{fig:activation-weight-dist-sig-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{act_weight_tanh.png}
+    \caption{Grafik distribusi bobot variasi fungsi aktivasi tanh — Implementasi FFNN}
+    \label{fig:activation-weight-dist-tanh-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{act_grad_lin.png}
+    \caption{Grafik distribusi gradien variasi fungsi aktivasi linear — Implementasi FFNN}
+    \label{fig:activation-grad-dist-lin-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{act_grad_relu.png}
+    \caption{Grafik distribusi gradien variasi fungsi aktivasi relu — Implementasi FFNN}
+    \label{fig:activation-grad-dist-relu-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{act_grad_sig.png}
+    \caption{Grafik distribusi gradien variasi fungsi aktivasi sigmoid — Implementasi FFNN}
+    \label{fig:activation-grad-dist-sig-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{act_grad_tanh.png}
+    \caption{Grafik distribusi gradien variasi fungsi aktivasi tanh — Implementasi FFNN}
+    \label{fig:activation-grad-dist-tanh-ffnn}
+\end{figure}
+
+\subsubsection{Implementasi Autodiff}
+
+\lipsum[1]
+
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Fungsi Aktivasi — Implementasi Autodiff}
     \begin{tabular}{lll}
         \toprule
         \textbf{Fungsi Aktivasi} & \textbf{Train Loss} & \textbf{Val Loss} \\
@@ -78,81 +223,153 @@
         Tanh    & 0.4805 & 0.5051 \\
         \bottomrule
     \end{tabular}
-    \label{tab:activation-exp}
+    \label{tab:activation-autodiff}
 \end{table}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{ad_act_loss.png}
     \includegraphics[width=0.4\textwidth]{ad_act_val.png}
-    \caption{Grafik training dan validation loss variasi fungsi aktivasi}
-    \label{fig:activation-loss}
+    \caption{Grafik training dan validation loss variasi fungsi aktivasi — Implementasi Autodiff}
+    \label{fig:activation-loss-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_act_weight_lin.png}
-    \caption{Grafik distribusi bobot variasi fungsi aktivasi linear}
-    \label{fig:activation-weight-dist-lin}
+    \caption{Grafik distribusi bobot variasi fungsi aktivasi linear — Implementasi Autodiff}
+    \label{fig:activation-weight-dist-lin-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_act_weight_relu.png}
-    \caption{Grafik distribusi bobot variasi fungsi aktivasi relu}
-    \label{fig:activation-weight-dist-relu}
+    \caption{Grafik distribusi bobot variasi fungsi aktivasi relu — Implementasi Autodiff}
+    \label{fig:activation-weight-dist-relu-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_act_weight_sig.png}
-    \caption{Grafik distribusi bobot variasi fungsi aktivasi sigmoid}
-    \label{fig:activation-weight-dist-sig}
+    \caption{Grafik distribusi bobot variasi fungsi aktivasi sigmoid — Implementasi Autodiff}
+    \label{fig:activation-weight-dist-sig-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_act_weight_tanh.png}
-    \caption{Grafik distribusi bobot variasi fungsi aktivasi tanh}
-    \label{fig:activation-weight-dist-tanh}
+    \caption{Grafik distribusi bobot variasi fungsi aktivasi tanh — Implementasi Autodiff}
+    \label{fig:activation-weight-dist-tanh-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_act_grad_lin.png}
-    \caption{Grafik distribusi gradien variasi fungsi aktivasi linear}
-    \label{fig:activation-grad-dist-lin}
+    \caption{Grafik distribusi gradien variasi fungsi aktivasi linear — Implementasi Autodiff}
+    \label{fig:activation-grad-dist-lin-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_act_grad_relu.png}
-    \caption{Grafik distribusi gradien variasi fungsi aktivasi relu}
-    \label{fig:activation-grad-dist-relu}
+    \caption{Grafik distribusi gradien variasi fungsi aktivasi relu — Implementasi Autodiff}
+    \label{fig:activation-grad-dist-relu-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_act_grad_sig.png}
-    \caption{Grafik distribusi gradien variasi fungsi aktivasi sigmoid}
-    \label{fig:activation-grad-dist-sig}
+    \caption{Grafik distribusi gradien variasi fungsi aktivasi sigmoid — Implementasi Autodiff}
+    \label{fig:activation-grad-dist-sig-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_act_grad_tanh.png}
-    \caption{Grafik distribusi gradien variasi fungsi aktivasi tanh}
-    \label{fig:activation-grad-dist-tanh}
+    \caption{Grafik distribusi gradien variasi fungsi aktivasi tanh — Implementasi Autodiff}
+    \label{fig:activation-grad-dist-tanh-autodiff}
 \end{figure}
+
 
 % ----------------------------------------------------------------
 \section{Pengaruh \textit{Learning Rate}}
+
+\subsubsection{Implementasi FFNN}
 
 \lipsum[1]
 
 \begin{table}[H]
     \centering
-    \caption{Hasil Prediksi Variasi Learning Rate}
+    \caption{Hasil Prediksi Variasi Learning Rate — Implementasi FFNN}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Learning Rate} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        $\eta = 0.0001$ & 0.5066 & 0.5189 \\
+        $\eta = 0.001$  & 0.4758 & 0.5094 \\
+        $\eta = 0.01$   & 0.4713 & 0.5331 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:lr-ffnn}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{lr_loss.png}
+    \includegraphics[width=0.4\textwidth]{lr_val.png}
+    \caption{Grafik training dan validation loss variasi learning rate — Implementasi FFNN}
+    \label{fig:lr-loss-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{lr_weight_small.png}
+    \caption{Grafik distribusi bobot variasi learning rate 0.0001 — Implementasi FFNN}
+    \label{fig:lr-weight-dist-small-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{lr_weight_med.png}
+    \caption{Grafik distribusi bobot variasi learning rate 0.001 — Implementasi FFNN}
+    \label{fig:lr-weight-dist-med-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{lr_weight_big.png}
+    \caption{Grafik distribusi bobot variasi learning rate 0.01 — Implementasi FFNN}
+    \label{fig:lr-weight-dist-big-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{lr_grad_small.png}
+    \caption{Grafik distribusi gradien variasi learning rate 0.0001 — Implementasi FFNN}
+    \label{fig:lr-grad-dist-small-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{lr_grad_med.png}
+    \caption{Grafik distribusi gradien variasi learning rate 0.001 — Implementasi FFNN}
+    \label{fig:lr-grad-dist-med-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{lr_grad_big.png}
+    \caption{Grafik distribusi gradien variasi learning rate 0.01 — Implementasi FFNN}
+    \label{fig:lr-grad-dist-big-ffnn}
+\end{figure}
+
+\subsubsection{Implementasi Autodiff}
+
+\lipsum[1]
+
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Learning Rate — Implementasi Autodiff}
     \begin{tabular}{lll}
         \toprule
         \textbf{Learning Rate} & \textbf{Train Loss} & \textbf{Val Loss} \\
@@ -162,128 +379,201 @@
         $\eta = 0.01$   & 0.4631 & 0.5251 \\
         \bottomrule
     \end{tabular}
-    \label{tab:lr}
+    \label{tab:lr-autodiff}
 \end{table}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{ad_lr_loss.png}
     \includegraphics[width=0.4\textwidth]{ad_lr_val.png}
-    \caption{Grafik training dan validation loss variasi learning rate}
-    \label{fig:lr-loss}
+    \caption{Grafik training dan validation loss variasi learning rate — Implementasi Autodiff}
+    \label{fig:lr-loss-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_lr_weight_small.png}
-    \caption{Grafik distribusi bobot variasi learning rate 0.0001}
-    \label{fig:lr-weight-dist-small}
+    \caption{Grafik distribusi bobot variasi learning rate 0.0001 — Implementasi Autodiff}
+    \label{fig:lr-weight-dist-small-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_lr_weight_med.png}
-    \caption{Grafik distribusi bobot variasi learning rate 0.001}
-    \label{fig:lr-weight-dist-med}
+    \caption{Grafik distribusi bobot variasi learning rate 0.001 — Implementasi Autodiff}
+    \label{fig:lr-weight-dist-med-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_lr_weight_big.png}
-    \caption{Grafik distribusi bobot variasi learning rate 0.01}
-    \label{fig:lr-weight-dist-big}
+    \caption{Grafik distribusi bobot variasi learning rate 0.01 — Implementasi Autodiff}
+    \label{fig:lr-weight-dist-big-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_lr_grad_small.png}
-    \caption{Grafik distribusi gradien variasi learning rate 0.0001}
-    \label{fig:lr-grad-dist-small}
+    \caption{Grafik distribusi gradien variasi learning rate 0.0001 — Implementasi Autodiff}
+    \label{fig:lr-grad-dist-small-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_lr_grad_med.png}
-    \caption{Grafik distribusi gradien variasi learning rate 0.001}
-    \label{fig:lr-grad-dist-med}
+    \caption{Grafik distribusi gradien variasi learning rate 0.001 — Implementasi Autodiff}
+    \label{fig:lr-grad-dist-med-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_lr_grad_big.png}
-    \caption{Grafik distribusi gradien variasi learning rate 0.01}
-    \label{fig:lr-grad-dist-big}
+    \caption{Grafik distribusi gradien variasi learning rate 0.01 — Implementasi Autodiff}
+    \label{fig:lr-grad-dist-big-autodiff}
 \end{figure}
+
 
 % ----------------------------------------------------------------
 \section{Pengaruh Regularisasi}
+
+\subsubsection{Implementasi FFNN}
 
 \lipsum[1]
 
 \begin{table}[H]
     \centering
-    \caption{Hasil Prediksi Variasi Regularisasi}
+    \caption{Hasil Prediksi Variasi Regularisasi — Implementasi FFNN}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Regularisasi} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        Tanpa regularisasi & 0.4757 & 0.5082 \\
+        L1                 & 0.6676 & 0.6669 \\
+        L2                 & 0.4974 & 0.5064 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:reg-ffnn}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{reg_loss.png}
+    \includegraphics[width=0.4\textwidth]{reg_val.png}
+    \caption{Grafik training dan validation loss variasi regularisasi — Implementasi FFNN}
+    \label{fig:reg-loss-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{weight_noreg.png}
+    \caption{Grafik distribusi bobot tanpa regularisasi — Implementasi FFNN}
+    \label{fig:reg-weight-dist-noreg-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{weight_l1.png}
+    \caption{Grafik distribusi bobot regularisasi L1 — Implementasi FFNN}
+    \label{fig:reg-weight-dist-l1-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{weight_l2.png}
+    \caption{Grafik distribusi bobot regularisasi L2 — Implementasi FFNN}
+    \label{fig:reg-weight-dist-l2-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grad_noreg.png}
+    \caption{Grafik distribusi gradien tanpa regularisasi — Implementasi FFNN}
+    \label{fig:reg-grad-dist-noreg-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grad_l1.png}
+    \caption{Grafik distribusi gradien regularisasi L1 — Implementasi FFNN}
+    \label{fig:reg-grad-dist-l1-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grad_l2.png}
+    \caption{Grafik distribusi gradien regularisasi L2 — Implementasi FFNN}
+    \label{fig:reg-grad-dist-l2-ffnn}
+\end{figure}
+
+\subsubsection{Implementasi Autodiff}
+
+\lipsum[1]
+
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Regularisasi — Implementasi Autodiff}
     \begin{tabular}{lll}
         \toprule
         \textbf{Regularisasi} & \textbf{Train Loss} & \textbf{Val Loss} \\
         \midrule
         Tanpa regularisasi & 0.4742 & 0.5152 \\
-        L1 & 0.5267 & 0.5005 \\
-        L2 & 0.4932 & 0.5070 \\
+        L1                 & 0.5267 & 0.5005 \\
+        L2                 & 0.4932 & 0.5070 \\
         \bottomrule
     \end{tabular}
-    \label{tab:reg}
+    \label{tab:reg-autodiff}
 \end{table}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{ad_reg_loss.png}
     \includegraphics[width=0.4\textwidth]{ad_reg_val.png}
-    \caption{Grafik training dan validation loss variasi regularisasi}
-    \label{fig:reg-loss}
+    \caption{Grafik training dan validation loss variasi regularisasi — Implementasi Autodiff}
+    \label{fig:reg-loss-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_weight_noreg.png}
-    \caption{Grafik distribusi bobot variasi tanpa regularisasi}
-    \label{fig:reg-weight-dist-noreg}
+    \caption{Grafik distribusi bobot tanpa regularisasi — Implementasi Autodiff}
+    \label{fig:reg-weight-dist-noreg-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_weight_l1.png}
-    \caption{Grafik distribusi bobot variasi regularisasi l1}
-    \label{fig:reg-weight-dist-l1}
+    \caption{Grafik distribusi bobot regularisasi L1 — Implementasi Autodiff}
+    \label{fig:reg-weight-dist-l1-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_weight_l2.png}
-    \caption{Grafik distribusi bobot variasi regularisasi l2}
-    \label{fig:reg-weight-dist-l2}
+    \caption{Grafik distribusi bobot regularisasi L2 — Implementasi Autodiff}
+    \label{fig:reg-weight-dist-l2-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_grad_noreg.png}
-    \caption{Grafik distribusi gradien variasi tanpa regularisasi}
-    \label{fig:reg-grad-dist-noreg}
+    \caption{Grafik distribusi gradien tanpa regularisasi — Implementasi Autodiff}
+    \label{fig:reg-grad-dist-noreg-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_grad_l1.png}
-    \caption{Grafik distribusi gradien variasi regularisasi l1}
-    \label{fig:reg-grad-dist-l1}
+    \caption{Grafik distribusi gradien regularisasi L1 — Implementasi Autodiff}
+    \label{fig:reg-grad-dist-l1-autodiff}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ad_grad_l2.png}
-    \caption{Grafik distribusi gradien variasi regularisasi l2}
-    \label{fig:reg-grad-dist-l2}
+    \caption{Grafik distribusi gradien regularisasi L2 — Implementasi Autodiff}
+    \label{fig:reg-grad-dist-l2-autodiff}
 \end{figure}
+
 
 % ----------------------------------------------------------------
 \section{Perbandingan dengan \textit{sklearn} MLP}
@@ -297,8 +587,8 @@
         \toprule
         \textbf{Model} & \textbf{Akurasi} & \textbf{Presisi} & \textbf{Recall} & \textbf{F1-Score} \\
         \midrule
-        Implementasi FFNN & -- & -- & -- & -- \\
-        Implementasi Autodiff & 0.7495 & 0.7906 & 0.8066 & 0.7985 \\
+        Implementasi FFNN      & 0.7575 & 0.7695 & 0.8651 & 0.8145 \\
+        Implementasi Autodiff  & 0.7495 & 0.7906 & 0.8066 & 0.7985 \\
         sklearn \texttt{MLPClassifier} & 0.7540 & 0.7759 & 0.8440 & 0.8085 \\
         \bottomrule
     \end{tabular}
