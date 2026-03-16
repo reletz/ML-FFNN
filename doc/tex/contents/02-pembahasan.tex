@@ -4,25 +4,55 @@
 
 \section{Penjelasan Implementasi}
 
-\subsection{Deskripsi Kelas}
+Implementasi FFNN pada tugas ini terdiri dari dua paradigma yang diimplementasikan secara terpisah namun menyelesaikan tugas yang sama.
 
-Implementasi FFNN terdiri dari beberapa kelas utama sebagai berikut:
+\textbf{Paradigma pertama} adalah komputasi manual (folder \texttt{src/ffnn/core/}), di mana setiap operasi matematis, mulai dari transformasi linear hingga \textit{backward propagation}, ditulis secara eksplisit menggunakan operasi matriks NumPy. Gradien dihitung dengan formula turunan yang sudah dikodekan secara langsung sesuai definisi \textit{chain rule}.
 
-\subsubsection{Kelas \texttt{Layer}}
-\lipsum[1]
+\textbf{Paradigma kedua} adalah diferensiasi otomatis (folder \texttt{src/ffnn/autodiff/}), di mana sistem membangun graf komputasional secara dinamis saat \textit{forward pass} berlangsung. Graf ini kemudian ditelusuri secara terbalik untuk menghitung gradien secara otomatis tanpa perlu menulis satu pun formula turunan secara eksplisit.
+
+% ----------------------------------------------------------------
+\subsection{Struktur Modular}
+
+Pengerjaan dibagi ke dalam beberapa subdirektori yang masing-masing menangani:
+
+\begin{itemize}
+    \item \textbf{\texttt{src/ffnn/activations/}}: Menyimpan implementasi fungsi aktivasi non-linear. File \texttt{Activation.py} mendefinisikan kelas abstrak dengan dua metode: \texttt{forward()} untuk komputasi nilai aktivasi dan \texttt{backward()} untuk menghitung turunan lokalnya. Setiap aktivasi (ReLU, Sigmoid, Tanh, Softmax) mewarisi kelas ini (\textit{inheritance}).
+    \item \textbf{\texttt{src/ffnn/losses/}}: Mendefinisikan fungsi objektif yang mengukur ketidaksesuaian antara prediksi model dan label sebenarnya. Metode \texttt{compute()} menghitung nilai \textit{loss} secara skalar, sementara \texttt{gradient()} menghasilkan turunan parsial \textit{loss} terhadap output prediksi yang menjadi titik awal \textit{backward propagation}.
+    \item \textbf{\texttt{src/ffnn/initializers/}}: Bertanggung jawab untuk menginisialisasi nilai awal bobot dan bias. Mendukung beberapa distribusi probabilistik (normal, seragam, nol) dengan parameter \texttt{seed} untuk menjamin reprodusibilitas eksperimen.
+    \item \textbf{\texttt{src/ffnn/regularizers/}}: Menyediakan mekanisme penalti untuk mencegah \textit{overfitting}. Implementasi L1 dan L2 regularisasi masing-masing menambahkan suku penalti ke fungsi \textit{loss} dan kontribusi gradien ke proses \textit{update}.
+    \item \textbf{\texttt{src/ffnn/optimizers/}}: Mengatur strategi pembaruan parameter berdasarkan gradien yang telah dihitung. Mendukung \textit{Gradient Descent} standar dan \textit{optimizer} Adam sebagai alternatifnya.
+    \item \textbf{\texttt{src/ffnn/utils/}}: Menyimpan fungsi utilitas seperti metrik evaluasi dan normalisasi data untuk melakukan \textit{preprocessing} dataset.
+    \item \textbf{\texttt{src/ffnn/core/}}: Implementasi FFNN dengan komputasi manual.
+    \item \textbf{\texttt{src/ffnn/autodiff/}}: Implementasi FFNN dengan diferensiasi otomatis berbasis graf komputasional.
+\end{itemize}
+
+% ----------------------------------------------------------------
+\subsection{Paradigma Manual: \texttt{core/}}
+
+\subsubsection{Kelas \texttt{Layer} (\texttt{core/layer.py})}
+
+Kelas \texttt{Layer} adalah satuan komputasi paling mendasar dalam paradigma manual. Setiap instans merepresentasikan satu lapisan sepenuhnya terhubung dari jaringan yang menjalankan transformasi \textit{affine} diikuti fungsi aktivasi non-linear.
+
+Tantangan utama dalam implementasi ini adalah memastikan semua nilai perantara yang dibutuhkan selama \textit{backward pass} dapat diakses kembali. Oleh karena itu, \texttt{Layer} menyimpan dua buah \textit{cache}: \texttt{input\_cache} yang menyimpan nilai input $X$ yang masuk ke \textit{layer}, dan \texttt{z\_cache} yang menyimpan hasil transformasi linear $z = XW + b$ sebelum fungsi aktivasi diterapkan. Tanpa \textit{caching} ini, perhitungan gradien di \textit{backward pass} tidak bisa dilakukan.
+
+Selain itu, \texttt{Layer} juga mendukung penambahan modul \texttt{RMSNorm} opsional yang disisipkan setelah transformasi linear dan sebelum fungsi aktivasi (penjelasan lebih lanjut ada di bagian tersendiri).
 
 \begin{table}[H]
     \centering
-    \caption{Atribut Kelas \texttt{Layer}}
+    \caption{Atribut Kelas \texttt{Layer} (\texttt{core/layer.py})}
     \begin{tabular}{lll}
         \toprule
         \textbf{Atribut} & \textbf{Tipe} & \textbf{Deskripsi} \\
         \midrule
-        \texttt{weights} & \texttt{np.ndarray} & Matriks bobot layer \\
-        \texttt{bias} & \texttt{np.ndarray} & Vektor bias layer \\
-        \texttt{grad\_weights} & \texttt{np.ndarray} & Gradien bobot layer \\
-        \texttt{grad\_bias} & \texttt{np.ndarray} & Gradien bias layer \\
-        \texttt{activation} & \texttt{str} & Nama fungsi aktivasi \\
+        \texttt{weights} & \texttt{np.ndarray} & Matriks bobot berukuran $(n_{in}, n_{out})$ \\
+        \texttt{biases} & \texttt{np.ndarray} & Vektor bias berukuran $(1, n_{out})$ \\
+        \texttt{weight\_gradients} & \texttt{np.ndarray} & Gradien \textit{loss} terhadap \texttt{weights}, diisi saat \textit{backward} \\
+        \texttt{bias\_gradients} & \texttt{np.ndarray} & Gradien \textit{loss} terhadap \texttt{biases}, diisi saat \textit{backward} \\
+        \texttt{activation} & \texttt{Activation} & Instans fungsi aktivasi yang digunakan \textit{layer} ini \\
+        \texttt{input\_cache} & \texttt{np.ndarray} & \textit{Cache} input $a^{(l-1)}$ dari \textit{forward pass} \\
+        \texttt{z\_cache} & \texttt{np.ndarray} & \textit{Cache} aktivasi pra-nonlinear $z^{(l)}$ dari \textit{forward pass} \\
+        \texttt{use\_rmsnorm} & \texttt{bool} & \textit{Flag} untuk mengaktifkan RMSNorm pada \textit{layer} ini \\
+        \texttt{rmsnorm} & \texttt{RMSNorm} & Instans modul RMSNorm (jika diaktifkan) \\
         \bottomrule
     \end{tabular}
     \label{tab:layer-attr}
@@ -30,135 +60,366 @@ Implementasi FFNN terdiri dari beberapa kelas utama sebagai berikut:
 
 \begin{table}[H]
     \centering
-    \caption{Method Kelas \texttt{Layer}}
-    \begin{tabular}{ll}
+    \caption{Metode Kelas \texttt{Layer} (\texttt{core/layer.py})}
+    \begin{tabular}{p{3.5cm}p{10cm}}
         \toprule
         \textbf{Method} & \textbf{Deskripsi} \\
         \midrule
-        \texttt{forward(x)} & Menghitung output layer untuk input \texttt{x} \\
-        \texttt{backward(delta)} & Menghitung gradien layer \\
+        \texttt{forward(X)} & Menghitung $z = X \cdot W + b$, lalu (opsional) menerapkan RMSNorm kemudian menerapkan fungsi aktivasi. Menyimpan $X$ dan $z$ ke \textit{cache} untuk kebutuhan \textit{backward}. \\[4pt]
+        \texttt{backward(grad\_output)} & Menerima \textit{gradient} dari \textit{layer} setelahnya, menghitung $dz$ melalui \texttt{activation.backward()}, lalu menghitung $dW$, $db$, dan meneruskan \textit{gradient} ke \textit{layer} sebelumnya. \\
         \bottomrule
     \end{tabular}
     \label{tab:layer-method}
 \end{table}
 
-\subsubsection{Kelas \texttt{FFNN}}
-\lipsum[1]
+\subsubsection{Kelas \texttt{Network} (\texttt{core/network.py})}
+
+\texttt{Network} mengelola urutan \texttt{Layer} dan mengatur alur data melalui jaringan. Pada \textit{forward pass}, output setiap \textit{layer} langsung menjadi input \textit{layer} berikutnya. Pada \textit{backward pass}, \textit{gradient} mengalir dari \textit{layer} terakhir ke \textit{layer} pertama secara berurutan terbalik.
 
 \begin{table}[H]
     \centering
-    \caption{Atribut Kelas \texttt{FFNN}}
+    \caption{Metode Kelas \texttt{Network} (\texttt{core/network.py})}
+    \begin{tabular}{p{3.5cm}p{10cm}}
+        \toprule
+        \textbf{Method} & \textbf{Deskripsi} \\
+        \midrule
+        \texttt{add\_layer(layer)} & Menambahkan \textit{layer} baru ke ujung jaringan. \\[4pt]
+        \texttt{forward(X)} & Iterasi maju melalui semua \textit{layer}, meneruskan output tiap \textit{layer} sebagai input ke \textit{layer} berikutnya. \\[4pt]
+        \texttt{backward(loss\_gradient)} & Iterasi mundur melalui semua \textit{layer}, memanggil \texttt{layer.backward()} secara terbalik untuk mem-\textit{propagate} \textit{gradient}. \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:network-method}
+\end{table}
+
+\subsubsection{Kelas \texttt{Model} (\texttt{core/model.py})}
+
+\texttt{Model} adalah \textit{high-level} API yang mengintegrasikan \texttt{Network}, fungsi \textit{loss}, \textit{optimizer}, dan \textit{regularizer}. Kelas ini bertanggung jawab atas perulangan pelatihan secara keseluruhan, mulai dari pembagian data menjadi \textit{mini-batch}, eksekusi \textit{forward-backward pass}, penambahan regularisasi, hingga pembaruan bobot via \textit{optimizer}.
+
+\begin{table}[H]
+    \centering
+    \caption{Atribut Kelas \texttt{Model} (\texttt{core/model.py})}
     \begin{tabular}{lll}
         \toprule
         \textbf{Atribut} & \textbf{Tipe} & \textbf{Deskripsi} \\
         \midrule
-        \texttt{layers} & \texttt{list[Layer]} & Daftar layer pada model \\
-        \texttt{loss\_fn} & \texttt{str} & Nama fungsi loss \\
-        \texttt{history} & \texttt{dict} & Histori training dan validation loss \\
+        \texttt{network} & \texttt{Network} & Urutan \textit{layer} yang dibangun dari \texttt{layer\_sizes} \\
+        \texttt{loss\_fn} & \texttt{Loss} & Fungsi \textit{loss} yang digunakan \\
+        \texttt{optimizer} & \texttt{Optimizer} & Algoritma \textit{update} parameter (GD atau Adam) \\
+        \texttt{regularizer} & \texttt{Regularizer} & \textit{Regularizer} opsional (L1 atau L2) \\
+        \texttt{history} & \texttt{dict} & Riwayat \texttt{train\_loss} dan \texttt{val\_loss} per \textit{epoch} \\
         \bottomrule
     \end{tabular}
-    \label{tab:ffnn-attr}
+    \label{tab:model-attr}
 \end{table}
 
 \begin{table}[H]
     \centering
-    \caption{Method Kelas \texttt{FFNN}}
-    \begin{tabular}{ll}
+    \caption{Metode Kelas \texttt{Model} (\texttt{core/model.py})}
+    \begin{tabular}{p{4.5cm}p{9cm}}
         \toprule
         \textbf{Method} & \textbf{Deskripsi} \\
         \midrule
-        \texttt{forward(X)} & Melakukan forward propagation \\
-        \texttt{backward(y\_true)} & Melakukan backward propagation \\
-        \texttt{fit(...)} & Melatih model \\
-        \texttt{predict(X)} & Melakukan prediksi \\
-        \texttt{plot\_weight\_dist(layers)} & Menampilkan distribusi bobot \\
-        \texttt{plot\_grad\_dist(layers)} & Menampilkan distribusi gradien \\
-        \texttt{save(path)} & Menyimpan model ke file \\
-        \texttt{load(path)} & Memuat model dari file \\
+        \texttt{fit(X\_train, y\_train, ...)} & \textit{Training loop} utama: iterasi \textit{epoch}, pemrosesan \textit{mini-batch}, siklus \textit{forward/backward/update}. Mengembalikan \textit{history} \textit{loss}. \\[4pt]
+        \texttt{predict(X)} & \textit{Forward pass} tanpa perhitungan gradien, untuk inferensi. \\[4pt]
+        \texttt{evaluate(X, y)} & Menghitung \textit{loss} pada data validasi atau \textit{test}. \\[4pt]
+        \texttt{plot\_weight\_ distribution(ids)} & Visualisasi histogram distribusi bobot untuk \textit{layer-layer} yang dipilih. \\[4pt]
+        \texttt{plot\_gradient\_ distribution(ids)} & Visualisasi histogram distribusi gradien setelah \textit{backward pass}. \\[4pt]
+        \texttt{save(filepath)} & Serialisasi model ke file via \textit{pickle}. \\[4pt]
+        \texttt{load(filepath)} & Memuat kembali model dari file yang sudah disimpan. \\
         \bottomrule
     \end{tabular}
-    \label{tab:ffnn-method}
+    \label{tab:model-method}
 \end{table}
 
 % ----------------------------------------------------------------
-\section{Forward Propagation}
+\subsection{Paradigma \textit{Automatic Differentiation}: \texttt{autodiff/}}
 
-Forward propagation menghitung output dari setiap layer secara berurutan dari input layer hingga output layer. Untuk setiap layer $l$, perhitungannya adalah sebagai berikut:
+Berbeda dengan paradigma \texttt{core/} yang mengharuskan penulisan formula turunan secara eksplisit, paradigma \texttt{autodiff/} menghitung turunan secara otomatis melalui mekanisme \textit{automatic differentiation}.
 
-\begin{equation}
-    z^{(l)} = W^{(l)} a^{(l-1)} + b^{(l)}
-    \label{eq:linear}
-\end{equation}
+Ide dasarnya sederhana, yakni setiap operasi antar \textit{tensor} selama \textit{forward pass} dicatat beserta cara menghitung turunannya. Saat \texttt{backward()} dipanggil, catatan ini ditelusuri secara terbalik untuk menghasilkan gradien tiap parameter. Pendekatan ini serupa dengan yang digunakan PyTorch.
 
-\begin{equation}
-    a^{(l)} = f^{(l)}(z^{(l)})
-    \label{eq:activation}
-\end{equation}
+\subsubsection{Kelas \texttt{Tensor} (\texttt{autodiff/tensor.py})}
 
-di mana $W^{(l)}$ adalah matriks bobot, $b^{(l)}$ adalah vektor bias, $f^{(l)}$ adalah fungsi aktivasi, dan $a^{(0)} = X$ adalah input.
+\texttt{Tensor} adalah komponen inti dari sistem \texttt{Automatic Differentiation}. Selain menyimpan nilai numerik layaknya \texttt{np.ndarray}, \texttt{Tensor} juga menyimpan asal-usul pembentukannya: operasi apa yang menghasilkannya dan dari \textit{tensor} mana.
 
-\subsection{Fungsi Aktivasi}
-
-Berikut fungsi aktivasi yang diimplementasikan:
+Setiap kali dua \texttt{Tensor} dioperasikan via operator \textit{overloaded} (\texttt{+}, \texttt{*}, \texttt{@}), \texttt{Tensor} hasil dibuat dengan dua atribut tambahan: \texttt{\_prev} yang mereferensikan kedua operan asal, dan \texttt{\_backward} yang menyimpan \textit{closure} untuk mem-\textit{propagate} gradien ke operan-operan tersebut. Proses ini berlangsung sepanjang \textit{forward pass} hingga terbentuk sebuah \textit{DAG} yang mencatat seluruh operasi dari input hingga \textit{loss}.
 
 \begin{table}[H]
     \centering
-    \caption{Fungsi Aktivasi}
+    \caption{Atribut Kelas \texttt{Tensor} (\texttt{autodiff/tensor.py})}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Atribut} & \textbf{Tipe} & \textbf{Deskripsi} \\
+        \midrule
+        \texttt{data} & \texttt{np.ndarray} & Array numerik yang menjadi nilai aktual \textit{tensor} \\
+        \texttt{grad} & \texttt{np.ndarray} & Akumulasi gradien dari \textit{loss}, diisi saat operasi \texttt{backward()} \\
+        \texttt{requires\_grad} & \texttt{bool} & Jika \texttt{True}, gradien \textit{tensor} ini akan dilacak \\
+        \texttt{\_backward} & \texttt{Callable} & \textit{Closure} untuk meneruskan \textit{gradient} ke \textit{tensor} induk \\
+        \texttt{\_prev} & \texttt{set[Tensor]} & Himpunan \textit{tensor} yang menjadi operan pembentuk \textit{tensor} ini \\
+        \texttt{\_op} & \texttt{str} & Nama operasi yang menghasilkan \textit{tensor} ini (untuk \textit{debugging}) \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:tensor-attr}
+\end{table}
+
+\paragraph{Mekanisme \texttt{backward()} pada \texttt{Tensor}.}
+Saat \texttt{backward()} dipanggil pada \textit{tensor} \textit{loss} (yang bernilai skalar), sistem melakukan tiga langkah:
+
+\begin{enumerate}
+    \item Sistem melakukan penelusuran kedalaman (\textit{DFS}) \textit{post-order} mulai dari \textit{tensor} \textit{loss} untuk membangun urutan linear semua \textit{tensor} dalam graf, sehingga setiap \textit{tensor} diproses setelah semua pendahulunya selesai.
+    \item Dimulai dari \textit{tensor} \textit{loss} dengan \texttt{grad = 1.0}, sistem memanggil \texttt{\_backward()} tiap \textit{tensor} secara terbalik, meneruskan \textit{gradient} dari output ke input.
+    \item Jika satu \textit{tensor} digunakan di beberapa cabang berbeda (misalnya \textit{shared weights}), gradiennya diakumulasikan dengan penjumlahan sesuai prinsip \textit{chain rule}.
+\end{enumerate}
+
+\subsubsection{Modul \texttt{ops.py} (\texttt{autodiff/ops.py})}
+
+Modul \texttt{ops.py} mendefinisikan semua operasi terdiferensiasi yang dapat digunakan oleh \texttt{Tensor}. Setiap fungsi di modul ini menerima satu atau dua \texttt{Tensor}, melakukan komputasi numerik menggunakan NumPy, lalu mengembalikan \texttt{Tensor} baru lengkap dengan \textit{closure} \texttt{\_backward} yang mengenkode cara menghitung \textit{gradient} untuk operan-operannya.
+
+Sebagai contoh, implementasi operasi perkalian matriks $C = A \cdot B$ menyimpan \textit{closure} yang mengenkode bahwa:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial A} = \frac{\partial \mathcal{L}}{\partial C} \cdot B^\top, \quad
+    \frac{\partial \mathcal{L}}{\partial B} = A^\top \cdot \frac{\partial \mathcal{L}}{\partial C}
+\end{equation}
+
+Hal yang sama berlaku untuk semua operasi lain, penjumlahan, perkalian \textit{element-wise}, fungsi aktivasi, hingga fungsi \textit{loss}, semuanya terdefinisi di \texttt{ops.py} dengan \textit{backward}-nya masing-masing.
+
+\begin{table}[H]
+    \centering
+    \caption{Operasi Terdiferensiasi dalam \texttt{autodiff/ops.py}}
     \begin{tabular}{ll}
         \toprule
-        \textbf{Nama} & \textbf{Definisi} \\
+        \textbf{Operasi} & \textbf{Deskripsi} \\
         \midrule
-        Linear   & $f(x) = x$ \\
-        ReLU     & $f(x) = \max(0, x)$ \\
-        Sigmoid  & $f(x) = \frac{1}{1 + e^{-x}}$ \\
-        Tanh     & $f(x) = \tanh(x)$ \\
-        Softmax  & $f(x_i) = \frac{e^{x_i}}{\sum_j e^{x_j}}$ \\
+        \texttt{exp}, \texttt{log}, \texttt{sqrt} & Operasi elemen demi elemen dengan \textit{backward} masing-masing \\
+        \texttt{sum}, \texttt{mean} & Reduksi sepanjang sumbu tertentu \\
+        \texttt{clip} & Pemotongan nilai dengan \textit{gradient} 0 di luar batas \\
+        \texttt{linear}, \texttt{relu}, \texttt{sigmoid}, \texttt{tanh}, \texttt{softmax} & Fungsi aktivasi \\
+        \texttt{mse\_loss} & Kesalahan Kuadrat Rata-rata sebagai \texttt{Tensor} skalar \\
+        \texttt{binary\_cross\_entropy} & Entropi Silang Biner sebagai \texttt{Tensor} skalar \\
+        \texttt{cross\_entropy} & Entropi Silang Kategorikal sebagai \texttt{Tensor} skalar \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:ops}
+\end{table}
+
+\subsubsection{Kelas \texttt{ADLayer} (\texttt{autodiff/layer.py})}
+
+\texttt{ADLayer} adalah padanan dari \texttt{Layer} di paradigma \texttt{core/}, namun implementasinya jauh lebih ringkas. Perbedaan paling signifikan adalah bobot dan bias bukan lagi \texttt{np.ndarray} biasa, melainkan \texttt{Tensor} dengan \texttt{requires\_grad=True}. Implikasinya sangat besar: tidak ada lagi \textit{caching} manual, tidak ada lagi atribut \texttt{weight\_gradients} atau \texttt{bias\_gradients} yang harus dikelola secara eksplisit. Saat \textit{forward pass} dijalankan, graf komputasional terbentuk secara otomatis. Ketika \texttt{backward()} dipanggil pada \textit{loss}, \textit{gradient} langsung terakumulasi di atribut \texttt{.grad} dari setiap \textit{tensor} parameter.
+
+\begin{table}[H]
+    \centering
+    \caption{Perbandingan \texttt{Layer} (core) vs \texttt{ADLayer} (autodiff)}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Aspek} & \textbf{\texttt{Layer} (core)} & \textbf{\texttt{ADLayer} (autodiff)} \\
+        \midrule
+        Tipe bobot & \texttt{np.ndarray} & \texttt{Tensor(requires\_grad=True)} \\
+        Penyimpanan gradien & \texttt{weight\_gradients} (manual) & \texttt{weights.grad} (otomatis) \\
+        \textit{Caching} nilai \textit{intermediate} & Ya (\texttt{input\_cache}, \texttt{z\_cache}) & Tidak perlu \\
+        Metode \texttt{backward()} & Ditulis eksplisit & Tidak ada \\
+        Kompleksitas implementasi & Lebih tinggi & Lebih rendah \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:layer-comparison}
+\end{table}
+
+\subsubsection{Kelas \texttt{ADNetwork} dan \texttt{ADModel}}
+
+\texttt{ADNetwork} adalah padanan dari \texttt{Network} di paradigma manual. Perbedaannya: metode \texttt{forward()} menerima dan mengembalikan \texttt{Tensor} (bukan \texttt{np.ndarray}), sehingga graf komputasional terus terbentuk seiring data melewati tiap \textit{layer}. Kelas ini juga menyediakan metode \texttt{parameters()} yang mengumpulkan semua \textit{tensor} parameter dari setiap \textit{layer} untuk digunakan \textit{optimizer}.
+
+\texttt{ADModel} adalah antarmuka tingkat tinggi untuk paradigma diferensiasi otomatis, dengan API yang sengaja dibuat semirip mungkin dengan \texttt{Model}. Perulangan pelatihannya jauh lebih bersih:
+
+\begin{enumerate}
+    \item \textit{Forward pass}: \texttt{pred = network.forward(x\_tensor)}
+    \item Hitung \textit{loss}: \texttt{loss\_t = loss\_fn(pred, y\_tensor)} --- menghasilkan \texttt{Tensor} skalar
+    \item \textit{Backward}: satu baris \texttt{loss\_t.backward()} menghasilkan semua gradien secara otomatis
+    \item Pembaruan \textit{optimizer}: \texttt{optimizer.update(params, grads)}
+    \item \textit{Reset} gradien: \texttt{network.zero\_grad()}
+\end{enumerate}
+
+Satu baris \texttt{loss\_t.backward()} menggantikan seluruh logika \textit{backward propagation} yang harus ditulis manual di paradigma \texttt{core/}. Ini adalah keunggulan utama pendekatan diferensiasi otomatis.
+
+% ================================================================
+\section{Forward Propagation}
+
+\textit{Forward propagation} adalah fase di mana data input mengalir dari \textit{input layer} menuju \textit{output layer} secara satu arah, menghasilkan prediksi akhir. Proses ini bersifat deterministik: untuk set parameter yang sama, input yang sama akan selalu menghasilkan output yang identik.
+
+\subsection{Mekanisme \textit{Forward Pass}}
+
+Untuk setiap \textit{layer} $l$ dalam jaringan, dua operasi dieksekusi secara berurutan.
+
+Pertama, transformasi linear (\textit{affine}):
+\begin{equation}
+    z^{(l)} = a^{(l-1)} \cdot W^{(l)} + b^{(l)}
+    \label{eq:linear}
+\end{equation}
+
+di mana $a^{(l-1)}$ adalah aktivasi \textit{layer} sebelumnya (dengan $a^{(0)} = X$ sebagai input mentah), $W^{(l)}$ adalah matriks bobot berukuran $(n_{in}^{(l)}, n_{out}^{(l)})$, dan $b^{(l)}$ adalah vektor bias berukuran $(1, n_{out}^{(l)})$. Hasil $z^{(l)}$ disebut aktivasi pra-nonlinear atau \textit{logit}.
+
+Kedua, fungsi aktivasi non-linear:
+\begin{equation}
+    a^{(l)} = f^{(l)}\!\left(z^{(l)}\right)
+    \label{eq:activation}
+\end{equation}
+
+Output $a^{(l)}$ menjadi input \textit{layer} berikutnya, atau menjadi prediksi akhir jika \textit{layer} ini adalah \textit{output layer}.
+
+Dalam implementasi \texttt{core/}, kedua operasi ini ada di \texttt{Layer.forward()}, dan nilai $X$ serta $z$ di-\textit{cache} untuk \textit{backward pass}. Sementara di \texttt{autodiff/}, tidak ada \textit{caching} manual, graf komputasional terbentuk otomatis saat operator \texttt{@} dan \texttt{+} pada \texttt{Tensor} dieksekusi.
+
+\subsection{Inisialisasi Bobot}
+
+Sebelum \textit{forward pass} dapat berjalan, semua parameter harus diinisialisasi. Nilai awal yang buruk bisa menyebabkan \textit{vanishing} atau \textit{exploding gradient} selama pelatihan, sehingga pilihan strategi inisialisasi tidak bisa sembarangan. Modul \texttt{src/ffnn/initializers/} menyediakan beberapa pilihan:
+
+\begin{itemize}
+    \item \textbf{Inisialisasi Nol}: Semua parameter diset ke 0. Tidak direkomendasikan untuk bobot karena menyebabkan semua neuron belajar hal yang sama (masalah simetri), namun umum digunakan untuk bias.
+    \item \textbf{Inisialisasi Seragam}: Pengambilan sampel dari distribusi seragam dalam interval $[low, high]$ yang dapat dikonfigurasi.
+    \item \textbf{Inisialisasi Normal}: Pengambilan sampel dari distribusi Gaussian dengan \textit{mean} $\mu$ dan variansi $\sigma^2$ yang dapat dikonfigurasi, menghasilkan bobot awal yang terdistribusi di sekitar nol.
+\end{itemize}
+
+\subsection{Fungsi Aktivasi}
+
+Fungsi aktivasi menambahkan non-linearitas ke jaringan, yang memungkinkan model untuk mempelajari pola yang tidak dapat direpresentasikan oleh transformasi linear. Tabel berikut merangkum implementasi yang ada beserta turunannya yang digunakan saat \textit{backward pass}:
+
+\begin{table}[H]
+    \centering
+    \caption{Fungsi Aktivasi dan Turunannya}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Nama} & \textbf{Forward: } $f(x)$ & \textbf{Backward: } $f'(x)$ \\
+        \midrule
+        Linear   & $x$ & $1$ \\
+        ReLU     & $\max(0,\, x)$ & $\mathbf{1}_{x > 0}$ \\
+        Sigmoid  & $\dfrac{1}{1 + e^{-x}}$ & $f(x)\left(1 - f(x)\right)$ \\[8pt]
+        Tanh     & $\tanh(x)$ & $1 - \tanh^2(x)$ \\[4pt]
+        Softmax  & $\dfrac{e^{x_i}}{\sum_j e^{x_j}}$ & $\text{diag}(\vec{s}) - \vec{s}\vec{s}^{\top}$ \\
         \bottomrule
     \end{tabular}
     \label{tab:activation}
 \end{table}
 
-% ----------------------------------------------------------------
-\section{Backward Propagation dan Weight Update}
-
-Backward propagation menghitung gradien setiap bobot terhadap fungsi loss menggunakan \textit{chain rule}.
-
-\subsection{Chain Rule}
-
-Gradien loss $\mathcal{L}$ terhadap bobot $W^{(l)}$ dihitung sebagai:
+Untuk Softmax, karena output tiap dimensi bergantung pada seluruh dimensi input, turunannya berbentuk matriks Jacobian, bukan turunan elemen demi elemen biasa. Dalam implementasi \texttt{ops.py}, hal ini ditangani dengan perkalian vektor-Jacobian yang efisien:
 
 \begin{equation}
-    \frac{\partial \mathcal{L}}{\partial W^{(l)}} = 
+    \frac{\partial \mathcal{L}}{\partial x_i} = s_i \left( \frac{\partial \mathcal{L}}{\partial s_i} - \sum_j \frac{\partial \mathcal{L}}{\partial s_j} \cdot s_j \right)
+\end{equation}
+
+% ================================================================
+\section{Backward Propagation dan Weight Update}
+
+\textit{Backward propagation} adalah fase di mana \textit{error} yang terukur oleh fungsi \textit{loss} digunakan untuk menghitung kontribusi setiap parameter terhadap \textit{error} tersebut. Informasi ini kemudian dipakai untuk memperbarui parameter agar model berkinerja lebih baik di iterasi berikutnya.
+
+\subsection{Alur Umum \textit{Backward Pass}}
+
+\textit{Backward pass} selalu dimulai dari \textit{layer output} dan bergerak mundur menuju \textit{layer input}. Langkah pertama adalah menghitung \textit{gradient} \textit{loss} terhadap output prediksi model $\frac{\partial \mathcal{L}}{\partial \hat{y}}$, yang kemudian diteruskan ke belakang \textit{layer} per \textit{layer}.
+
+Pada paradigma \texttt{core/}, \textit{gradient} ini dihitung secara eksplisit oleh metode \texttt{Loss.gradient(y\_true, y\_pred)}, lalu diteruskan sebagai argumen ke \texttt{network.backward()} yang mempropagasinya dari \textit{layer} terakhir ke pertama. Di setiap \textit{layer}, \textit{chain rule} diterapkan untuk menghitung \textit{gradient} parameter \textit{layer} tersebut sekaligus \textit{gradient} yang diteruskan ke \textit{layer} sebelumnya.
+
+Pada paradigma \texttt{autodiff/}, proses ini jauh lebih sederhana dari perspektif pengguna: cukup panggil \texttt{loss\_t.backward()}, dan sistem secara otomatis menelusuri graf komputasional yang sudah terbentuk saat \textit{forward pass} untuk menghitung semua \textit{gradient}.
+
+\subsection{\textit{Chain Rule} pada Setiap \textit{Layer}}
+
+Untuk setiap \textit{layer} $l$, \textit{gradient} \textit{loss} terhadap bobot dihitung menggunakan \textit{chain rule}:
+
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial W^{(l)}} =
     \frac{\partial \mathcal{L}}{\partial a^{(l)}} \cdot
     \frac{\partial a^{(l)}}{\partial z^{(l)}} \cdot
     \frac{\partial z^{(l)}}{\partial W^{(l)}}
     \label{eq:chainrule}
 \end{equation}
 
-\subsection{Fungsi Loss}
+Masing-masing faktor memiliki peran tersendiri:
+\begin{itemize}
+    \item $\frac{\partial \mathcal{L}}{\partial a^{(l)}}$ adalah \textit{gradient upstream} yang datang dari \textit{layer} setelahnya.
+    \item $\frac{\partial a^{(l)}}{\partial z^{(l)}}$ adalah turunan fungsi aktivasi, dihitung menggunakan $z^{(l)}$ yang di-\textit{cache} saat \textit{forward pass}.
+    \item $\frac{\partial z^{(l)}}{\partial W^{(l)}} = a^{(l-1)\top}$, karena $z^{(l)} = a^{(l-1)} W^{(l)} + b^{(l)}$.
+\end{itemize}
+
+Dalam implementasi \texttt{core/layer.py}, urutan komputasi di \texttt{backward()} adalah:
+\begin{enumerate}
+    \item Hitung $dz = \texttt{grad\_output} \odot f'(\texttt{z\_cache})$ via \texttt{activation.backward()}
+    \item Hitung $dW = \frac{1}{B} \cdot \texttt{input\_cache}^\top \times dz$, dengan $B$ adalah \textit{batch size}
+    \item Hitung $db = \frac{1}{B} \sum_{batch} dz$
+    \item Teruskan \textit{gradient} ke \textit{layer} sebelumnya: $dx = dz \times W^\top$
+\end{enumerate}
+
+\subsection{Fungsi \textit{Loss} dan Turunannya}
 
 \begin{table}[H]
     \centering
-    \caption{Fungsi Loss dan Turunannya}
-    \begin{tabular}{lll}
+    \caption{Fungsi \textit{Loss}, Definisi, dan Gradien terhadap Prediksi}
+    \begin{tabular}{p{2.8cm}p{5.5cm}p{4.5cm}}
         \toprule
-        \textbf{Nama} & \textbf{Definisi} & \textbf{Turunan terhadap $\hat{y}$} \\
+        \textbf{Nama} & \textbf{Definisi} & \textbf{Gradien: } $\frac{\partial \mathcal{L}}{\partial \hat{y}}$ \\
         \midrule
-        MSE & $\frac{1}{n}\sum(y - \hat{y})^2$ & $\frac{-2(y - \hat{y})}{n}$ \\
-        Binary CE & $-\frac{1}{n}\sum y\log\hat{y} + (1-y)\log(1-\hat{y})$ & $\frac{\hat{y} - y}{n\hat{y}(1-\hat{y})}$ \\
-        Categorical CE & $-\frac{1}{n}\sum_k y_k \log \hat{y}_k$ & $\frac{-y_k}{n\hat{y}_k}$ \\
+        MSE & $\dfrac{1}{n}\displaystyle\sum_{i=1}^{n}(y_i - \hat{y}_i)^2$ & $\dfrac{-2(y - \hat{y})}{n}$ \\[12pt]
+        Binary CE & $-\dfrac{1}{n}\displaystyle\sum [y \ln\hat{y} + (1{-}y)\ln(1{-}\hat{y})]$ & $\dfrac{\hat{y} - y}{n\hat{y}(1-\hat{y})}$ \\[12pt]
+        Categorical CE & $-\dfrac{1}{n}\displaystyle\sum_i \sum_k y_{i,k} \ln \hat{y}_{i,k}$ & $-\dfrac{y}{n\hat{y}}$ \\
         \bottomrule
     \end{tabular}
     \label{tab:loss}
 \end{table}
 
-\subsection{Weight Update}
+Untuk menjaga stabilitas numerik, implementasi \textit{loss} di kedua paradigma menambahkan nilai epsilon kecil ($\varepsilon = 10^{-15}$) sebelum operasi logaritma guna mencegah \texttt{log(0)}.
 
-Setelah gradien dihitung, bobot diperbarui menggunakan gradient descent:
+\subsection{Regularisasi dalam \textit{Backward Pass}}
+
+Jika \textit{regularizer} diaktifkan, \textit{gradient} penalti harus ditambahkan ke \textit{gradient} bobot sebelum \textit{optimizer} melakukan pembaruan:
 
 \begin{equation}
-    W^{(l)} \leftarrow W^{(l)} - \eta \frac{\partial \mathcal{L}}{\partial W^{(l)}}
-    \label{eq:weight-update}
+    dW_{total} = dW_{loss} + dW_{reg}
 \end{equation}
 
-di mana $\eta$ adalah learning rate.
+Untuk L2 regularisasi, $dW_{reg} = \lambda W$ --- \textit{gradient} proporsional terhadap magnitude bobot, mendorong bobot tetap kecil. Untuk L1, $dW_{reg} = \lambda \cdot \text{sign}(W)$ --- lebih agresif dalam mendorong bobot menuju nol, menghasilkan model yang lebih \textit{sparse}.
+
+Pada paradigma \texttt{core/}, penambahan ini dilakukan secara eksplisit di dalam perulangan pelatihan \texttt{Model.fit()} sebelum \textit{optimizer} dipanggil. Pada paradigma \texttt{autodiff/}, karena \textit{gradient} regularisasi tidak masuk ke dalam graf komputasional \texttt{Tensor}, penambahannya juga dilakukan secara manual di \texttt{ADModel.fit()} --- ini adalah salah satu kasus di mana diferensiasi otomatis dan komputasi manual perlu dikombinasikan.
+
+\subsection{\textit{Weight Update} via \textit{Optimizer}}
+
+Setelah seluruh \textit{gradient} terkumpul, langkah terakhir adalah memperbarui parameter.
+
+\paragraph{\textit{Gradient Descent}.}
+\textit{Update rule} paling dasar:
+\begin{equation}
+    W^{(l)} \leftarrow W^{(l)} - \eta \cdot dW^{(l)}
+    \label{eq:gd-update}
+\end{equation}
+di mana $\eta$ adalah \textit{learning rate} yang mengontrol seberapa besar satu langkah pembaruan.
+
+\paragraph{Adam (\textit{Adaptive Moment Estimation}).}
+\textit{Optimizer} yang lebih canggih dengan \textit{adaptive learning rate} per-parameter:
+\begin{align}
+    m_t &= \beta_1 m_{t-1} + (1-\beta_1)\, g_t \\
+    v_t &= \beta_2 v_{t-1} + (1-\beta_2)\, g_t^2 \\
+    \hat{m}_t &= \frac{m_t}{1-\beta_1^t}, \quad \hat{v}_t = \frac{v_t}{1-\beta_2^t} \\
+    W^{(l)} &\leftarrow W^{(l)} - \eta\, \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}
+\end{align}
+
+Adam mempertahankan dua statistik per-parameter: rata-rata bergerak eksponensial dari \textit{gradient} ($m_t$, momen pertama) dan dari kuadrat \textit{gradient} ($v_t$, momen kedua). Pembagian dengan $\sqrt{\hat{v}_t}$ membuat \textit{learning rate} efektif tiap parameter berbeda-beda: parameter yang historis gradiennya besar mendapat langkah yang lebih kecil, dan sebaliknya. Ini membuat Adam umumnya lebih stabil dan lebih cepat konvergen dibanding \textit{Gradient Descent} standar.
+
+% ================================================================
+\section{RMSNorm}
+
+RMSNorm (\textit{Root Mean Square Normalization}) adalah teknik normalisasi yang disisipkan pada tiap \textit{layer} untuk menstabilkan distribusi aktivasi selama pelatihan. Berbeda dengan \textit{BatchNorm} yang mengurangi \textit{mean} sebelum normalisasi (\textit{mean-centering}), RMSNorm melewati langkah tersebut dan langsung membagi aktivasi dengan \textit{root mean square}-nya.
+
+\subsection{\textit{Forward Pass} RMSNorm}
+
+Diberikan input $x$ berukuran $(B, d)$ di mana $B$ adalah \textit{batch size} dan $d$ adalah dimensi, RMSNorm menghitung:
+
+\begin{equation}
+    \text{RMS}(x) = \sqrt{\frac{1}{d} \sum_{i=1}^{d} x_i^2 + \varepsilon}
+    \label{eq:rms}
+\end{equation}
+
+\begin{equation}
+    \hat{x} = \frac{x}{\text{RMS}(x)}, \quad y = \gamma \odot \hat{x}
+    \label{eq:rmsnorm}
+\end{equation}
+
+di mana $\gamma$ adalah parameter \textit{learnable} yang diinisialisasi ke 1, berfungsi sebagai skala per-dimensi. Parameter $\varepsilon$ adalah konstanta kecil untuk stabilitas numerik.
+
+\subsection{Integrasi dalam \textit{Layer}}
+
+RMSNorm disisipkan setelah transformasi linear dan sebelum fungsi aktivasi. Pada paradigma \texttt{core/} (kelas \texttt{RMSNorm} di \texttt{core/rmsnorm.py}), \textit{forward} dan \textit{backward} ditulis secara eksplisit dengan \textit{caching} nilai perantara. Pada paradigma \texttt{autodiff/} (kelas \texttt{ADRMSNorm} di \texttt{autodiff/rmsnorm.py}), RMSNorm cukup diekspresikan menggunakan operasi-operasi \texttt{ops.py} yang sudah terdiferensiasi, sehingga gradiennya dihitung secara otomatis tanpa perlu menulis \textit{backward} secara eksplisit.
+
+Parameter $\gamma$ dari RMSNorm diperlakukan sebagai parameter yang dapat dilatih, sehingga ikut diperbarui oleh \textit{optimizer} bersama bobot dan bias tiap \textit{layer}.
