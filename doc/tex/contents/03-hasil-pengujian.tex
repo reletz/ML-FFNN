@@ -124,7 +124,7 @@ Implementasi Autodiff pada variasi \textit{depth} mengonfirmasi pola yang sama s
 
 \subsubsection{Implementasi Manual}
 
-Pengujian variasi fungsi aktivasi pada implementasi manual menunjukkan perbedaan yang relatif kecil antar konfigurasi, namun dengan pola yang informatif. Berdasarkan Tabel~\ref{tab:activation-ffnn}, ReLU menghasilkan \textit{train loss} terendah (0.4735), diikuti Tanh (0.4787), Linear (0.4815), dan Sigmoid (0.4869). Pada sisi \textit{val loss}, Sigmoid justru unggul dengan nilai terkecil (0.5018), diikuti Linear (0.5051), ReLU (0.5069), dan Tanh (0.5087). Hasil ini menunjukkan adanya \textit{trade-off} yang menarik: ReLU paling efektif dalam mengoptimasi data latih berkat sifat gradiennya yang tidak jenuh (\textit{non-saturating}), namun Sigmoid memberikan generalisasi terbaik meskipun \textit{train loss}-nya paling tinggi. Distribusi bobot dan gradien pada Gambar~\ref{fig:activation-weight-dist-lin-ffnn}--\ref{fig:activation-grad-dist-tanh-ffnn} memperlihatkan bahwa tiap fungsi aktivasi menghasilkan pola distribusi yang berbeda, terutama pada lapisan keluaran, yang berkontribusi pada perbedaan performa generalisasi tersebut.
+Pengujian variasi fungsi aktivasi pada implementasi manual menunjukkan perbedaan yang relatif kecil antar konfigurasi, namun dengan pola yang informatif. Berdasarkan Tabel~\ref{tab:activation-ffnn}, LeakyReLU menghasilkan \textit{train loss} terendah (0.4743), diikuti ReLU (0.4735), Tanh (0.4787), ELU (0.4823), Linear (0.4815), dan Sigmoid (0.4870). Pada sisi \textit{val loss}, Sigmoid unggul dengan nilai terkecil (0.5018), diikuti Linear (0.5052), ELU (0.5074), ReLU (0.5069), Tanh (0.5087), dan LeakyReLU (0.5122). Hasil ini menunjukkan adanya \textit{trade-off} yang menarik: LeakyReLU dan ReLU paling efektif dalam mengoptimasi data latih berkat sifat gradiennya yang tidak jenuh (\textit{non-saturating}), namun Sigmoid memberikan generalisasi terbaik meskipun \textit{train loss}-nya paling tinggi. Sementara itu, ELU menempati posisi tengah pada kedua metrik, menunjukkan keseimbangan antara kemampuan fitting dan generalisasi. Distribusi bobot dan gradien pada Gambar~\ref{fig:activation-weight-dist-lin-ffnn}--\ref{fig:activation-grad-dist-elu-ffnn} memperlihatkan bahwa tiap fungsi aktivasi menghasilkan pola distribusi yang berbeda, terutama pada lapisan keluaran, yang berkontribusi pada perbedaan performa generalisasi tersebut.
 
 \begin{table}[H]
     \centering
@@ -133,10 +133,12 @@ Pengujian variasi fungsi aktivasi pada implementasi manual menunjukkan perbedaan
         \toprule
         \textbf{Fungsi Aktivasi} & \textbf{Train Loss} & \textbf{Val Loss} \\
         \midrule
-        Linear  & 0.4815 & 0.5051 \\
-        ReLU    & 0.4735 & 0.5069 \\
-        Sigmoid & 0.4869 & 0.5018 \\
-        Tanh    & 0.4787 & 0.5087 \\
+        Linear     & 0.4815 & 0.5052 \\
+        ReLU       & 0.4735 & 0.5069 \\
+        Sigmoid    & 0.4870 & 0.5018 \\
+        Tanh       & 0.4787 & 0.5087 \\
+        LeakyReLU  & 0.4743 & 0.5122 \\
+        ELU        & 0.4823 & 0.5074 \\
         \bottomrule
     \end{tabular}
     \label{tab:activation-ffnn}
@@ -236,7 +238,7 @@ Pengujian variasi fungsi aktivasi pada implementasi manual menunjukkan perbedaan
 
 \subsubsection{Implementasi Autodiff}
 
-Implementasi Autodiff pada variasi fungsi aktivasi menunjukkan pola yang sangat serupa dengan implementasi manual. Berdasarkan Tabel~\ref{tab:activation-autodiff}, ReLU kembali menghasilkan \textit{train loss} terendah (0.4757), sementara Sigmoid menghasilkan \textit{val loss} terkecil (0.5015). Perbandingan langsung antara kedua implementasi menunjukkan bahwa nilai-nilainya sangat berdekatan: selisih \textit{train loss} antar keduanya tidak lebih dari 0.003 untuk setiap fungsi aktivasi. Satu perbedaan yang layak dicatat adalah bahwa Autodiff menghasilkan \textit{val loss} Linear yang lebih rendah (0.5049 vs 0.5051) namun \textit{val loss} ReLU yang lebih tinggi (0.5105 vs 0.5069) dibandingkan FFNN. Distribusi gradien pada Gambar~\ref{fig:activation-grad-dist-lin-autodiff}--\ref{fig:activation-grad-dist-tanh-autodiff} memperlihatkan besaran gradien yang berbeda antara Autodiff dan FFNN, yang mencerminkan perbedaan cara kedua paradigma menghitung turunan — namun keduanya mengarah pada kesimpulan yang konsisten: Sigmoid memberikan generalisasi terbaik pada dataset ini.
+Implementasi Autodiff pada variasi fungsi aktivasi menunjukkan pola yang sangat serupa dengan implementasi manual. Berdasarkan Tabel~\ref{tab:activation-autodiff}, LeakyReLU menghasilkan \textit{train loss} terendah (0.4736), diikuti ReLU (0.4757), ELU (0.4783), Tanh (0.4805), Linear (0.4818), dan Sigmoid (0.4873). Pada sisi \textit{val loss}, Sigmoid menghasilkan nilai terkecil (0.5015), diikuti Linear (0.5049), Tanh (0.5051), ELU (0.5092), ReLU (0.5105), dan LeakyReLU (0.5136). Perbandingan langsung antara kedua implementasi menunjukkan bahwa nilai-nilainya sangat berdekatan: selisih \textit{train loss} antar keduanya umumnya sangat kecil, meskipun pada LeakyReLU Autodiff sedikit melampaui implementasi manual dalam penyesuaian pada data latih. Satu perbedaan yang layak dicatat adalah bahwa Autodiff menghasilkan \textit{val loss} Linear dan Tanh yang lebih rendah namun \textit{val loss} ReLU dan LeakyReLU yang lebih tinggi dibandingkan implementasi manual. Distribusi gradien pada Gambar~\ref{fig:activation-grad-dist-lin-autodiff}--\ref{fig:activation-grad-dist-elu-autodiff} memperlihatkan besaran gradien yang berbeda antara Autodiff dan implementasi manual, yang mencerminkan perbedaan cara kedua paradigma menghitung turunan. Namun, keduanya mengarah pada kesimpulan yang konsisten: fungsi dengan gradien tidak jenuh (\textit{non-saturating}) seperti LeakyReLU dan ReLU unggul di tahap pelatihan, sementara Sigmoid memberikan generalisasi terbaik pada dataset ini.
 
 \begin{table}[H]
     \centering
@@ -245,10 +247,12 @@ Implementasi Autodiff pada variasi fungsi aktivasi menunjukkan pola yang sangat 
         \toprule
         \textbf{Fungsi Aktivasi} & \textbf{Train Loss} & \textbf{Val Loss} \\
         \midrule
-        Linear  & 0.4818 & 0.5049 \\
-        ReLU    & 0.4757 & 0.5105 \\
-        Sigmoid & 0.4873 & 0.5015 \\
-        Tanh    & 0.4805 & 0.5051 \\
+        Linear     & 0.4818 & 0.5049 \\
+        ReLU       & 0.4757 & 0.5105 \\
+        Sigmoid    & 0.4873 & 0.5015 \\
+        Tanh       & 0.4805 & 0.5051 \\
+        LeakyReLU  & 0.4736 & 0.5136 \\
+        ELU        & 0.4783 & 0.5092 \\
         \bottomrule
     \end{tabular}
     \label{tab:activation-autodiff}
