@@ -3,7 +3,9 @@
 \chapter{Deskripsi Persoalan}
 
 \section{Latar Belakang}
-\lipsum[1]
+\textit{Artificial Neural Network} (ANN) merupakan model pembelajaran mesin yang terinspirasi dari cara kerja jaringan saraf biologis. Salah satu arsitektur ANN yang paling umum digunakan adalah \textit{Feedforward Neural Network} (FFNN), di mana data mengalir dari \textit{input layer} melalui satu atau lebih \textit{hidden layer} hingga mencapai \textit{output layer} tanpa adanya \textit{loop} umpan balik.
+
+Dengan mengimplementasikan FFNN \textit{from scratch}, kita dapat mempelajari secara langsung beberapa mekanisme inti. Pertama, \textit{forward propagation}, yaitu proses perhitungan matriks antar lapisan untuk menghasilkan prediksi. Kedua, \textit{backward propagation}, yaitu perhitungan gradien kesalahan menggunakan \textit{chain rule} untuk mengetahui kontribusi setiap bobot terhadap error. Ketiga, proses pembaruan bobot menggunakan algoritma optimisasi seperti \textit{gradient descent}. Pemahaman terhadap ketiga mekanisme ini menjadi dasar yang kuat untuk menentukan \textit{hyperparameter} yang tepat guna mencapai keseimbangan akurasi, presisi, dan \textit{recall}.
 
 \section{Tujuan}
 Tugas ini bertujuan untuk mengimplementasikan Feedforward Neural Network (FFNN) \textit{from scratch} tanpa menggunakan library deep learning yang sudah ada. Secara spesifik, tujuan tugas ini adalah:

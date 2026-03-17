@@ -85,7 +85,7 @@ Selain itu, \texttt{Layer} juga mendukung penambahan modul \texttt{RMSNorm} opsi
         \midrule
         \texttt{add\_layer(layer)} & Menambahkan \textit{layer} baru ke ujung jaringan. \\[4pt]
         \texttt{forward(X)} & Iterasi maju melalui semua \textit{layer}, meneruskan output tiap \textit{layer} sebagai input ke \textit{layer} berikutnya. \\[4pt]
-        \texttt{backward(loss\_gradient)} & Iterasi mundur melalui semua \textit{layer}, memanggil \texttt{layer.backward()} secara terbalik untuk mem-\textit{propagate} \textit{gradient}. \\
+        \texttt{backward(loss \_gradient)} & Iterasi mundur melalui semua \textit{layer}, memanggil \texttt{layer.backward()} secara terbalik untuk mem-\textit{propagate} \textit{gradient}. \\
         \bottomrule
     \end{tabular}
     \label{tab:network-method}
@@ -400,7 +400,7 @@ Adam mempertahankan dua statistik per-parameter: rata-rata bergerak eksponensial
 % ================================================================
 \section{RMSNorm}
 
-RMSNorm (\textit{Root Mean Square Normalization}) adalah teknik normalisasi yang disisipkan pada tiap \textit{layer} untuk menstabilkan distribusi aktivasi selama pelatihan. Berbeda dengan \textit{BatchNorm} yang mengurangi \textit{mean} sebelum normalisasi (\textit{mean-centering}), RMSNorm melewati langkah tersebut dan langsung membagi aktivasi dengan \textit{root mean square}-nya.
+RMSNorm (\textit{Root Mean Square Normalization}) adalah teknik normalisasi yang disisipkan pada tiap \textit{layer} untuk menstabilkan distribusi aktivasi selama pelatihan.
 
 \subsection{\textit{Forward Pass} RMSNorm}
 

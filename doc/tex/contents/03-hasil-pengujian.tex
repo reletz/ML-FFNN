@@ -7,13 +7,13 @@
 
 \subsection{Variasi \textit{Width} (Depth Tetap)}
 
-\subsubsection{Implementasi FFNN}
+\subsubsection{Implementasi Manual}
 
-Pengujian variasi \textit{width} pada implementasi FFNN dilakukan dengan mempertahankan kedalaman jaringan dan mengganti lebar setiap lapisan tersembunyi. Hasil pada Tabel~\ref{tab:width-ffnn} menunjukkan bahwa semakin lebar jaringan, semakin rendah \textit{train loss} yang dicapai: \textit{width} kecil menghasilkan \textit{train loss} 0.4800, sedang 0.4733, dan besar 0.4652. Pola ini konsisten dengan ekspektasi teoritis bahwa kapasitas model yang lebih besar memungkinkan jaringan mempelajari representasi yang lebih kaya dari data latih. Namun demikian, \textit{val loss} justru menunjukkan tren sebaliknya — \textit{width} kecil menghasilkan \textit{val loss} terendah (0.5082), sedangkan \textit{width} besar menghasilkan \textit{val loss} tertinggi (0.5113). Hal ini mengindikasikan adanya \textit{overfitting} ringan seiring bertambahnya kapasitas model: jaringan yang lebih lebar mulai menghafal pola spesifik data latih yang tidak dapat digeneralisasi ke data validasi. Dengan demikian, untuk dataset ini, konfigurasi \textit{width} kecil memberikan keseimbangan terbaik antara kapasitas model dan kemampuan generalisasi.
+Pengujian variasi \textit{width} pada implementasi manual dilakukan dengan mempertahankan kedalaman jaringan dan mengganti lebar setiap lapisan tersembunyi. Hasil pada Tabel~\ref{tab:width-ffnn} menunjukkan bahwa semakin lebar jaringan, semakin rendah \textit{train loss} yang dicapai: \textit{width} kecil menghasilkan \textit{train loss} 0.4800, sedang 0.4733, dan besar 0.4652. Pola ini konsisten dengan ekspektasi teoritis bahwa kapasitas model yang lebih besar memungkinkan jaringan mempelajari representasi yang lebih kaya dari data latih. Namun demikian, \textit{val loss} justru menunjukkan tren sebaliknya — \textit{width} kecil menghasilkan \textit{val loss} terendah (0.5082), sedangkan \textit{width} besar menghasilkan \textit{val loss} tertinggi (0.5113). Hal ini mengindikasikan adanya \textit{overfitting} ringan seiring bertambahnya kapasitas model: jaringan yang lebih lebar mulai menghafal pola spesifik data latih yang tidak dapat digeneralisasi ke data validasi. Dengan demikian, untuk dataset ini, konfigurasi \textit{width} kecil memberikan keseimbangan terbaik antara kapasitas model dan kemampuan generalisasi.
 
 \begin{table}[H]
     \centering
-    \caption{Hasil Prediksi Variasi Width — Implementasi FFNN}
+    \caption{Hasil Prediksi Variasi Width — Implementasi Manual}
     \begin{tabular}{llll}
         \toprule
         \textbf{Konfigurasi} & \textbf{Arsitektur} & \textbf{Train Loss} & \textbf{Val Loss} \\
@@ -30,13 +30,13 @@ Pengujian variasi \textit{width} pada implementasi FFNN dilakukan dengan mempert
     \centering
     \includegraphics[width=0.4\textwidth]{width_loss.png}
     \includegraphics[width=0.4\textwidth]{width_val.png}
-    \caption{Grafik training dan validation loss variasi width — Implementasi FFNN}
+    \caption{Grafik training dan validation loss variasi width — Implementasi Manual}
     \label{fig:width-loss-ffnn}
 \end{figure}
 
 \subsubsection{Implementasi Autodiff}
 
-Implementasi Autodiff menunjukkan pola yang serupa dengan implementasi FFNN pada variasi \textit{width}. \textit{Train loss} menurun seiring bertambahnya lebar jaringan: dari 0.4820 (\textit{width} kecil) menjadi 0.4644 (\textit{width} besar). Sementara itu, \textit{val loss} pada konfigurasi \textit{width} kecil (0.5056) lebih rendah dibandingkan \textit{width} sedang (0.5124) maupun besar (0.5091), meskipun selisihnya cukup kecil. Perbandingan antara kedua implementasi menunjukkan bahwa Autodiff secara konsisten mencapai \textit{train loss} yang sedikit lebih rendah pada \textit{width} besar (0.4644 vs 0.4652), namun juga menghasilkan \textit{val loss} yang lebih rendah pada \textit{width} kecil (0.5056 vs 0.5082). Secara keseluruhan, kedua implementasi memberikan kesimpulan yang sejalan: penambahan \textit{width} meningkatkan kemampuan belajar pada data latih namun tidak selalu meningkatkan generalisasi.
+Implementasi Autodiff menunjukkan pola yang serupa dengan implementasi manual pada variasi \textit{width}. \textit{Train loss} menurun seiring bertambahnya lebar jaringan: dari 0.4820 (\textit{width} kecil) menjadi 0.4644 (\textit{width} besar). Sementara itu, \textit{val loss} pada konfigurasi \textit{width} kecil (0.5056) lebih rendah dibandingkan \textit{width} sedang (0.5124) maupun besar (0.5091), meskipun selisihnya cukup kecil. Perbandingan antara kedua implementasi menunjukkan bahwa Autodiff secara konsisten mencapai \textit{train loss} yang sedikit lebih rendah pada \textit{width} besar (0.4644 vs 0.4652), namun juga menghasilkan \textit{val loss} yang lebih rendah pada \textit{width} kecil (0.5056 vs 0.5082). Secara keseluruhan, kedua implementasi memberikan kesimpulan yang sejalan: penambahan \textit{width} meningkatkan kemampuan belajar pada data latih namun tidak selalu meningkatkan generalisasi.
 
 \begin{table}[H]
     \centering
@@ -64,13 +64,13 @@ Implementasi Autodiff menunjukkan pola yang serupa dengan implementasi FFNN pada
 
 \subsection{Variasi \textit{Depth} (Width Tetap)}
 
-\subsubsection{Implementasi FFNN}
+\subsubsection{Implementasi Manual}
 
-Pengujian variasi \textit{depth} pada implementasi FFNN dilakukan dengan mempertahankan lebar setiap lapisan dan menambah jumlah lapisan tersembunyi. Berdasarkan Tabel~\ref{tab:depth-ffnn}, \textit{train loss} terus menurun seiring bertambahnya kedalaman: \textit{shallow} (0.4782), \textit{medium} (0.4732), dan \textit{deep} (0.4689). Ini menunjukkan bahwa jaringan yang lebih dalam mampu menangkap pola yang lebih kompleks pada data latih. Namun, \textit{val loss} justru menunjukkan bahwa konfigurasi \textit{shallow} menghasilkan generalisasi terbaik (0.5087), sementara konfigurasi \textit{medium} dan \textit{deep} menghasilkan \textit{val loss} yang lebih tinggi (masing-masing 0.5143 dan 0.5106). Fenomena ini mengindikasikan bahwa penambahan lapisan mendorong model menuju \textit{overfitting}: kapasitas ekstra tidak diimbangi dengan manfaat generalisasi yang sebanding. Untuk dataset ini, arsitektur \textit{shallow} terbukti lebih efektif dalam mencapai keseimbangan antara \textit{train loss} dan \textit{val loss}.
+Pengujian variasi \textit{depth} pada implementasi manual dilakukan dengan mempertahankan lebar setiap lapisan dan menambah jumlah lapisan tersembunyi. Berdasarkan Tabel~\ref{tab:depth-ffnn}, \textit{train loss} terus menurun seiring bertambahnya kedalaman: \textit{shallow} (0.4782), \textit{medium} (0.4732), dan \textit{deep} (0.4689). Ini menunjukkan bahwa jaringan yang lebih dalam mampu menangkap pola yang lebih kompleks pada data latih. Namun, \textit{val loss} justru menunjukkan bahwa konfigurasi \textit{shallow} menghasilkan generalisasi terbaik (0.5087), sementara konfigurasi \textit{medium} dan \textit{deep} menghasilkan \textit{val loss} yang lebih tinggi (masing-masing 0.5143 dan 0.5106). Fenomena ini mengindikasikan bahwa penambahan lapisan mendorong model menuju \textit{overfitting}: kapasitas ekstra tidak diimbangi dengan manfaat generalisasi yang sebanding. Untuk dataset ini, arsitektur \textit{shallow} terbukti lebih efektif dalam mencapai keseimbangan antara \textit{train loss} dan \textit{val loss}.
 
 \begin{table}[H]
     \centering
-    \caption{Hasil Prediksi Variasi Depth — Implementasi FFNN}
+    \caption{Hasil Prediksi Variasi Depth — Implementasi Manual}
     \begin{tabular}{llll}
         \toprule
         \textbf{Konfigurasi} & \textbf{Arsitektur} & \textbf{Train Loss} & \textbf{Val Loss} \\
@@ -87,13 +87,13 @@ Pengujian variasi \textit{depth} pada implementasi FFNN dilakukan dengan mempert
     \centering
     \includegraphics[width=0.4\textwidth]{depth_loss.png}
     \includegraphics[width=0.4\textwidth]{depth_val.png}
-    \caption{Grafik training dan validation loss variasi depth — Implementasi FFNN}
+    \caption{Grafik training dan validation loss variasi depth — Implementasi Manual}
     \label{fig:depth-loss-ffnn}
 \end{figure}
 
 \subsubsection{Implementasi Autodiff}
 
-Implementasi Autodiff pada variasi \textit{depth} mengonfirmasi pola yang sama seperti implementasi FFNN. \textit{Train loss} menurun dari 0.4787 (\textit{shallow}) menjadi 0.4644 (\textit{deep}), sedangkan \textit{val loss} justru meningkat dari 0.5062 (\textit{shallow}) menjadi 0.5162 (\textit{deep}). Perbedaan menarik terlihat pada konfigurasi \textit{deep}: Autodiff mencapai \textit{train loss} lebih rendah (0.4644 vs 0.4689) namun dengan \textit{val loss} yang jauh lebih tinggi (0.5162 vs 0.5106) dibandingkan FFNN. Hal ini menunjukkan bahwa implementasi Autodiff cenderung lebih agresif dalam mengoptimasi data latih pada arsitektur yang lebih dalam, sehingga rentan terhadap \textit{overfitting} yang lebih besar. Kesimpulannya, baik pada FFNN maupun Autodiff, penambahan \textit{depth} secara konsisten meningkatkan \textit{train loss} namun menurunkan kemampuan generalisasi pada dataset ini, sehingga konfigurasi \textit{shallow} tetap menjadi pilihan terbaik.
+Implementasi Autodiff pada variasi \textit{depth} mengonfirmasi pola yang sama seperti implementasi manual. \textit{Train loss} menurun dari 0.4787 (\textit{shallow}) menjadi 0.4644 (\textit{deep}), sedangkan \textit{val loss} justru meningkat dari 0.5062 (\textit{shallow}) menjadi 0.5162 (\textit{deep}). Perbedaan menarik terlihat pada konfigurasi \textit{deep}: Autodiff mencapai \textit{train loss} lebih rendah (0.4644 vs 0.4689) namun dengan \textit{val loss} yang jauh lebih tinggi (0.5162 vs 0.5106) dibandingkan FFNN. Hal ini menunjukkan bahwa implementasi Autodiff cenderung lebih agresif dalam mengoptimasi data latih pada arsitektur yang lebih dalam, sehingga rentan terhadap \textit{overfitting} yang lebih besar. Kesimpulannya, baik pada FFNN maupun Autodiff, penambahan \textit{depth} secara konsisten meningkatkan \textit{train loss} namun menurunkan kemampuan generalisasi pada dataset ini, sehingga konfigurasi \textit{shallow} tetap menjadi pilihan terbaik.
 
 \begin{table}[H]
     \centering
@@ -122,13 +122,13 @@ Implementasi Autodiff pada variasi \textit{depth} mengonfirmasi pola yang sama s
 % ----------------------------------------------------------------
 \section{Pengaruh Fungsi Aktivasi}
 
-\subsubsection{Implementasi FFNN}
+\subsubsection{Implementasi Manual}
 
-Pengujian variasi fungsi aktivasi pada implementasi FFNN menunjukkan perbedaan yang relatif kecil antar konfigurasi, namun dengan pola yang informatif. Berdasarkan Tabel~\ref{tab:activation-ffnn}, ReLU menghasilkan \textit{train loss} terendah (0.4735), diikuti Tanh (0.4787), Linear (0.4815), dan Sigmoid (0.4869). Pada sisi \textit{val loss}, Sigmoid justru unggul dengan nilai terkecil (0.5018), diikuti Linear (0.5051), ReLU (0.5069), dan Tanh (0.5087). Hasil ini menunjukkan adanya \textit{trade-off} yang menarik: ReLU paling efektif dalam mengoptimasi data latih berkat sifat gradiennya yang tidak jenuh (\textit{non-saturating}), namun Sigmoid memberikan generalisasi terbaik meskipun \textit{train loss}-nya paling tinggi. Distribusi bobot dan gradien pada Gambar~\ref{fig:activation-weight-dist-lin-ffnn}--\ref{fig:activation-grad-dist-tanh-ffnn} memperlihatkan bahwa tiap fungsi aktivasi menghasilkan pola distribusi yang berbeda, terutama pada lapisan keluaran, yang berkontribusi pada perbedaan performa generalisasi tersebut.
+Pengujian variasi fungsi aktivasi pada implementasi manual menunjukkan perbedaan yang relatif kecil antar konfigurasi, namun dengan pola yang informatif. Berdasarkan Tabel~\ref{tab:activation-ffnn}, ReLU menghasilkan \textit{train loss} terendah (0.4735), diikuti Tanh (0.4787), Linear (0.4815), dan Sigmoid (0.4869). Pada sisi \textit{val loss}, Sigmoid justru unggul dengan nilai terkecil (0.5018), diikuti Linear (0.5051), ReLU (0.5069), dan Tanh (0.5087). Hasil ini menunjukkan adanya \textit{trade-off} yang menarik: ReLU paling efektif dalam mengoptimasi data latih berkat sifat gradiennya yang tidak jenuh (\textit{non-saturating}), namun Sigmoid memberikan generalisasi terbaik meskipun \textit{train loss}-nya paling tinggi. Distribusi bobot dan gradien pada Gambar~\ref{fig:activation-weight-dist-lin-ffnn}--\ref{fig:activation-grad-dist-tanh-ffnn} memperlihatkan bahwa tiap fungsi aktivasi menghasilkan pola distribusi yang berbeda, terutama pada lapisan keluaran, yang berkontribusi pada perbedaan performa generalisasi tersebut.
 
 \begin{table}[H]
     \centering
-    \caption{Hasil Prediksi Variasi Fungsi Aktivasi — Implementasi FFNN}
+    \caption{Hasil Prediksi Variasi Fungsi Aktivasi — Implementasi Manual}
     \begin{tabular}{lll}
         \toprule
         \textbf{Fungsi Aktivasi} & \textbf{Train Loss} & \textbf{Val Loss} \\
@@ -146,69 +146,69 @@ Pengujian variasi fungsi aktivasi pada implementasi FFNN menunjukkan perbedaan y
     \centering
     \includegraphics[width=0.4\textwidth]{act_loss.png}
     \includegraphics[width=0.4\textwidth]{act_val.png}
-    \caption{Grafik training dan validation loss variasi fungsi aktivasi — Implementasi FFNN}
+    \caption{Grafik training dan validation loss variasi fungsi aktivasi — Implementasi Manual}
     \label{fig:activation-loss-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{act_weight_lin.png}
-    \caption{Grafik distribusi bobot variasi fungsi aktivasi linear — Implementasi FFNN}
+    \caption{Grafik distribusi bobot variasi fungsi aktivasi linear — Implementasi Manual}
     \label{fig:activation-weight-dist-lin-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{act_weight_relu.png}
-    \caption{Grafik distribusi bobot variasi fungsi aktivasi relu — Implementasi FFNN}
+    \caption{Grafik distribusi bobot variasi fungsi aktivasi relu — Implementasi Manual}
     \label{fig:activation-weight-dist-relu-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{act_weight_sig.png}
-    \caption{Grafik distribusi bobot variasi fungsi aktivasi sigmoid — Implementasi FFNN}
+    \caption{Grafik distribusi bobot variasi fungsi aktivasi sigmoid — Implementasi Manual}
     \label{fig:activation-weight-dist-sig-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{act_weight_tanh.png}
-    \caption{Grafik distribusi bobot variasi fungsi aktivasi tanh — Implementasi FFNN}
+    \caption{Grafik distribusi bobot variasi fungsi aktivasi tanh — Implementasi Manual}
     \label{fig:activation-weight-dist-tanh-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{act_grad_lin.png}
-    \caption{Grafik distribusi gradien variasi fungsi aktivasi linear — Implementasi FFNN}
+    \caption{Grafik distribusi gradien variasi fungsi aktivasi linear — Implementasi Manual}
     \label{fig:activation-grad-dist-lin-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{act_grad_relu.png}
-    \caption{Grafik distribusi gradien variasi fungsi aktivasi relu — Implementasi FFNN}
+    \caption{Grafik distribusi gradien variasi fungsi aktivasi relu — Implementasi Manual}
     \label{fig:activation-grad-dist-relu-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{act_grad_sig.png}
-    \caption{Grafik distribusi gradien variasi fungsi aktivasi sigmoid — Implementasi FFNN}
+    \caption{Grafik distribusi gradien variasi fungsi aktivasi sigmoid — Implementasi Manual}
     \label{fig:activation-grad-dist-sig-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{act_grad_tanh.png}
-    \caption{Grafik distribusi gradien variasi fungsi aktivasi tanh — Implementasi FFNN}
+    \caption{Grafik distribusi gradien variasi fungsi aktivasi tanh — Implementasi Manual}
     \label{fig:activation-grad-dist-tanh-ffnn}
 \end{figure}
 
 \subsubsection{Implementasi Autodiff}
 
-Implementasi Autodiff pada variasi fungsi aktivasi menunjukkan pola yang sangat serupa dengan implementasi FFNN. Berdasarkan Tabel~\ref{tab:activation-autodiff}, ReLU kembali menghasilkan \textit{train loss} terendah (0.4757), sementara Sigmoid menghasilkan \textit{val loss} terkecil (0.5015). Perbandingan langsung antara kedua implementasi menunjukkan bahwa nilai-nilainya sangat berdekatan: selisih \textit{train loss} antar keduanya tidak lebih dari 0.003 untuk setiap fungsi aktivasi. Satu perbedaan yang layak dicatat adalah bahwa Autodiff menghasilkan \textit{val loss} Linear yang lebih rendah (0.5049 vs 0.5051) namun \textit{val loss} ReLU yang lebih tinggi (0.5105 vs 0.5069) dibandingkan FFNN. Distribusi gradien pada Gambar~\ref{fig:activation-grad-dist-lin-autodiff}--\ref{fig:activation-grad-dist-tanh-autodiff} memperlihatkan besaran gradien yang berbeda antara Autodiff dan FFNN, yang mencerminkan perbedaan cara kedua paradigma menghitung turunan — namun keduanya mengarah pada kesimpulan yang konsisten: Sigmoid memberikan generalisasi terbaik pada dataset ini.
+Implementasi Autodiff pada variasi fungsi aktivasi menunjukkan pola yang sangat serupa dengan implementasi manual. Berdasarkan Tabel~\ref{tab:activation-autodiff}, ReLU kembali menghasilkan \textit{train loss} terendah (0.4757), sementara Sigmoid menghasilkan \textit{val loss} terkecil (0.5015). Perbandingan langsung antara kedua implementasi menunjukkan bahwa nilai-nilainya sangat berdekatan: selisih \textit{train loss} antar keduanya tidak lebih dari 0.003 untuk setiap fungsi aktivasi. Satu perbedaan yang layak dicatat adalah bahwa Autodiff menghasilkan \textit{val loss} Linear yang lebih rendah (0.5049 vs 0.5051) namun \textit{val loss} ReLU yang lebih tinggi (0.5105 vs 0.5069) dibandingkan FFNN. Distribusi gradien pada Gambar~\ref{fig:activation-grad-dist-lin-autodiff}--\ref{fig:activation-grad-dist-tanh-autodiff} memperlihatkan besaran gradien yang berbeda antara Autodiff dan FFNN, yang mencerminkan perbedaan cara kedua paradigma menghitung turunan — namun keduanya mengarah pada kesimpulan yang konsisten: Sigmoid memberikan generalisasi terbaik pada dataset ini.
 
 \begin{table}[H]
     \centering
@@ -294,13 +294,13 @@ Implementasi Autodiff pada variasi fungsi aktivasi menunjukkan pola yang sangat 
 % ----------------------------------------------------------------
 \section{Pengaruh \textit{Learning Rate}}
 
-\subsubsection{Implementasi FFNN}
+\subsubsection{Implementasi Manual}
 
-Pengujian variasi \textit{learning rate} pada implementasi FFNN menunjukkan pengaruh yang signifikan terhadap dinamika pelatihan. Berdasarkan Tabel~\ref{tab:lr-ffnn}, \textit{learning rate} terbesar ($\eta = 0.01$) menghasilkan \textit{train loss} terendah (0.4713), namun sekaligus \textit{val loss} tertinggi (0.5331) — selisih yang jauh lebih besar dibandingkan dua konfigurasi lainnya. Ini merupakan tanda klasik \textit{overfitting} yang dipicu oleh langkah pembaruan yang terlalu besar: model bergerak agresif mengikuti sinyal data latih tanpa memperhitungkan generalisasi. Sebaliknya, $\eta = 0.0001$ menghasilkan \textit{train loss} tertinggi (0.5066) dan \textit{val loss} yang juga tinggi (0.5189), menandakan bahwa model belum konvergen sepenuhnya dalam jumlah epoch yang tersedia. Konfigurasi $\eta = 0.001$ memberikan keseimbangan terbaik dengan \textit{train loss} 0.4758 dan \textit{val loss} 0.5094. Distribusi bobot dan gradien pada Gambar~\ref{fig:lr-weight-dist-small-ffnn}--\ref{fig:lr-grad-dist-big-ffnn} memperlihatkan bahwa \textit{learning rate} besar menghasilkan bobot dengan sebaran yang lebih lebar dan gradien yang lebih bervariasi, konsisten dengan perilaku optimasi yang lebih agresif.
+Pengujian variasi \textit{learning rate} pada implementasi manual menunjukkan pengaruh yang signifikan terhadap dinamika pelatihan. Berdasarkan Tabel~\ref{tab:lr-ffnn}, \textit{learning rate} terbesar ($\eta = 0.01$) menghasilkan \textit{train loss} terendah (0.4713), namun sekaligus \textit{val loss} tertinggi (0.5331) — selisih yang jauh lebih besar dibandingkan dua konfigurasi lainnya. Ini merupakan tanda klasik \textit{overfitting} yang dipicu oleh langkah pembaruan yang terlalu besar: model bergerak agresif mengikuti sinyal data latih tanpa memperhitungkan generalisasi. Sebaliknya, $\eta = 0.0001$ menghasilkan \textit{train loss} tertinggi (0.5066) dan \textit{val loss} yang juga tinggi (0.5189), menandakan bahwa model belum konvergen sepenuhnya dalam jumlah epoch yang tersedia. Konfigurasi $\eta = 0.001$ memberikan keseimbangan terbaik dengan \textit{train loss} 0.4758 dan \textit{val loss} 0.5094. Distribusi bobot dan gradien pada Gambar~\ref{fig:lr-weight-dist-small-ffnn}--\ref{fig:lr-grad-dist-big-ffnn} memperlihatkan bahwa \textit{learning rate} besar menghasilkan bobot dengan sebaran yang lebih lebar dan gradien yang lebih bervariasi, konsisten dengan perilaku optimasi yang lebih agresif.
 
 \begin{table}[H]
     \centering
-    \caption{Hasil Prediksi Variasi Learning Rate — Implementasi FFNN}
+    \caption{Hasil Prediksi Variasi Learning Rate — Implementasi Manual}
     \begin{tabular}{lll}
         \toprule
         \textbf{Learning Rate} & \textbf{Train Loss} & \textbf{Val Loss} \\
@@ -317,49 +317,49 @@ Pengujian variasi \textit{learning rate} pada implementasi FFNN menunjukkan peng
     \centering
     \includegraphics[width=0.4\textwidth]{lr_loss.png}
     \includegraphics[width=0.4\textwidth]{lr_val.png}
-    \caption{Grafik training dan validation loss variasi learning rate — Implementasi FFNN}
+    \caption{Grafik training dan validation loss variasi learning rate — Implementasi Manual}
     \label{fig:lr-loss-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{lr_weight_small.png}
-    \caption{Grafik distribusi bobot variasi learning rate 0.0001 — Implementasi FFNN}
+    \caption{Grafik distribusi bobot variasi learning rate 0.0001 — Implementasi Manual}
     \label{fig:lr-weight-dist-small-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{lr_weight_med.png}
-    \caption{Grafik distribusi bobot variasi learning rate 0.001 — Implementasi FFNN}
+    \caption{Grafik distribusi bobot variasi learning rate 0.001 — Implementasi Manual}
     \label{fig:lr-weight-dist-med-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{lr_weight_big.png}
-    \caption{Grafik distribusi bobot variasi learning rate 0.01 — Implementasi FFNN}
+    \caption{Grafik distribusi bobot variasi learning rate 0.01 — Implementasi Manual}
     \label{fig:lr-weight-dist-big-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{lr_grad_small.png}
-    \caption{Grafik distribusi gradien variasi learning rate 0.0001 — Implementasi FFNN}
+    \caption{Grafik distribusi gradien variasi learning rate 0.0001 — Implementasi Manual}
     \label{fig:lr-grad-dist-small-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{lr_grad_med.png}
-    \caption{Grafik distribusi gradien variasi learning rate 0.001 — Implementasi FFNN}
+    \caption{Grafik distribusi gradien variasi learning rate 0.001 — Implementasi Manual}
     \label{fig:lr-grad-dist-med-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{lr_grad_big.png}
-    \caption{Grafik distribusi gradien variasi learning rate 0.01 — Implementasi FFNN}
+    \caption{Grafik distribusi gradien variasi learning rate 0.01 — Implementasi Manual}
     \label{fig:lr-grad-dist-big-ffnn}
 \end{figure}
 
@@ -436,13 +436,13 @@ Implementasi Autodiff pada variasi \textit{learning rate} mengonfirmasi tren yan
 % ----------------------------------------------------------------
 \section{Pengaruh Regularisasi}
 
-\subsubsection{Implementasi FFNN}
+\subsubsection{Implementasi Manual}
 
-Pengujian variasi regularisasi pada implementasi FFNN menghasilkan temuan yang paling mencolok di antara semua eksperimen. Berdasarkan Tabel~\ref{tab:reg-ffnn}, regularisasi L1 menghasilkan \textit{train loss} yang sangat tinggi (0.6676) dan \textit{val loss} yang juga tinggi (0.6669) — jauh di atas konfigurasi lainnya. Hal ini disebabkan oleh sifat penalti L1 yang mendorong bobot menuju nol secara agresif melalui fungsi \textit{sign}, sehingga kapasitas efektif model berkurang drastis dan model menjadi \textit{underfit}. Distribusi bobot pada Gambar~\ref{fig:reg-weight-dist-l1-ffnn} mengonfirmasi hal ini: bobot terkonsentrasi sangat rapat di sekitar nol dengan standar deviasi yang jauh lebih kecil dibandingkan konfigurasi lain. Sebaliknya, regularisasi L2 menghasilkan \textit{val loss} terbaik (0.5064) meskipun \textit{train loss}-nya (0.4974) lebih tinggi dari konfigurasi tanpa regularisasi (0.4742/0.5082). L2 berhasil menekan \textit{overfitting} secara lebih halus dengan mendorong bobot tetap kecil namun tidak nol, sehingga model mempertahankan kapasitas yang cukup untuk generalisasi yang baik.
+Pengujian variasi regularisasi pada implementasi manual menghasilkan temuan yang paling mencolok di antara semua eksperimen. Berdasarkan Tabel~\ref{tab:reg-ffnn}, regularisasi L1 menghasilkan \textit{train loss} yang sangat tinggi (0.6676) dan \textit{val loss} yang juga tinggi (0.6669) — jauh di atas konfigurasi lainnya. Hal ini disebabkan oleh sifat penalti L1 yang mendorong bobot menuju nol secara agresif melalui fungsi \textit{sign}, sehingga kapasitas efektif model berkurang drastis dan model menjadi \textit{underfit}. Distribusi bobot pada Gambar~\ref{fig:reg-weight-dist-l1-ffnn} mengonfirmasi hal ini: bobot terkonsentrasi sangat rapat di sekitar nol dengan standar deviasi yang jauh lebih kecil dibandingkan konfigurasi lain. Sebaliknya, regularisasi L2 menghasilkan \textit{val loss} terbaik (0.5064) meskipun \textit{train loss}-nya (0.4974) lebih tinggi dari konfigurasi tanpa regularisasi (0.4742/0.5082). L2 berhasil menekan \textit{overfitting} secara lebih halus dengan mendorong bobot tetap kecil namun tidak nol, sehingga model mempertahankan kapasitas yang cukup untuk generalisasi yang baik.
 
 \begin{table}[H]
     \centering
-    \caption{Hasil Prediksi Variasi Regularisasi — Implementasi FFNN}
+    \caption{Hasil Prediksi Variasi Regularisasi — Implementasi Manual}
     \begin{tabular}{lll}
         \toprule
         \textbf{Regularisasi} & \textbf{Train Loss} & \textbf{Val Loss} \\
@@ -459,55 +459,55 @@ Pengujian variasi regularisasi pada implementasi FFNN menghasilkan temuan yang p
     \centering
     \includegraphics[width=0.4\textwidth]{reg_loss.png}
     \includegraphics[width=0.4\textwidth]{reg_val.png}
-    \caption{Grafik training dan validation loss variasi regularisasi — Implementasi FFNN}
+    \caption{Grafik training dan validation loss variasi regularisasi — Implementasi Manual}
     \label{fig:reg-loss-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{weight_noreg.png}
-    \caption{Grafik distribusi bobot tanpa regularisasi — Implementasi FFNN}
+    \caption{Grafik distribusi bobot tanpa regularisasi — Implementasi Manual}
     \label{fig:reg-weight-dist-noreg-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{weight_l1.png}
-    \caption{Grafik distribusi bobot regularisasi L1 — Implementasi FFNN}
+    \caption{Grafik distribusi bobot regularisasi L1 — Implementasi Manual}
     \label{fig:reg-weight-dist-l1-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{weight_l2.png}
-    \caption{Grafik distribusi bobot regularisasi L2 — Implementasi FFNN}
+    \caption{Grafik distribusi bobot regularisasi L2 — Implementasi Manual}
     \label{fig:reg-weight-dist-l2-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{grad_noreg.png}
-    \caption{Grafik distribusi gradien tanpa regularisasi — Implementasi FFNN}
+    \caption{Grafik distribusi gradien tanpa regularisasi — Implementasi Manual}
     \label{fig:reg-grad-dist-noreg-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{grad_l1.png}
-    \caption{Grafik distribusi gradien regularisasi L1 — Implementasi FFNN}
+    \caption{Grafik distribusi gradien regularisasi L1 — Implementasi Manual}
     \label{fig:reg-grad-dist-l1-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{grad_l2.png}
-    \caption{Grafik distribusi gradien regularisasi L2 — Implementasi FFNN}
+    \caption{Grafik distribusi gradien regularisasi L2 — Implementasi Manual}
     \label{fig:reg-grad-dist-l2-ffnn}
 \end{figure}
 
 \subsubsection{Implementasi Autodiff}
 
-Implementasi Autodiff pada variasi regularisasi menunjukkan pola yang secara kualitatif sama dengan FFNN, namun dengan perbedaan kuantitatif yang signifikan pada L1. Pada Autodiff, regularisasi L1 menghasilkan \textit{train loss} 0.5267 dan \textit{val loss} 0.5005 — jauh lebih baik dibandingkan FFNN yang menghasilkan 0.6676/0.6669. Perbedaan ini kemungkinan disebabkan oleh perbedaan implementasi penambahan gradien regularisasi antara kedua paradigma, atau oleh perbedaan kekuatan koefisien regularisasi yang digunakan. Menariknya, pada Autodiff L1 justru menghasilkan \textit{val loss} terbaik (0.5005) di antara semua konfigurasi regularisasi, berbanding terbalik dengan FFNN di mana L1 menghasilkan performa terburuk. Regularisasi L2 pada Autodiff menghasilkan \textit{val loss} 0.5070, sedikit lebih tinggi dari L1 namun lebih rendah dari tanpa regularisasi (0.5152). Distribusi bobot pada Gambar~\ref{fig:reg-weight-dist-l1-autodiff} menunjukkan bahwa efek \textit{sparsity} L1 pada Autodiff jauh lebih moderat dibandingkan FFNN, yang menjelaskan mengapa model Autodiff dengan L1 tidak mengalami \textit{underfitting} yang sama parahnya.
+Implementasi Autodiff pada variasi regularisasi menunjukkan pola yang secara kualitatif sama dengan implementasi manual, namun dengan perbedaan kuantitatif yang signifikan pada L1. Pada Autodiff, regularisasi L1 menghasilkan \textit{train loss} 0.5267 dan \textit{val loss} 0.5005 — jauh lebih baik dibandingkan FFNN yang menghasilkan 0.6676/0.6669. Perbedaan ini kemungkinan disebabkan oleh perbedaan implementasi penambahan gradien regularisasi antara kedua paradigma, atau oleh perbedaan kekuatan koefisien regularisasi yang digunakan. Menariknya, pada Autodiff L1 justru menghasilkan \textit{val loss} terbaik (0.5005) di antara semua konfigurasi regularisasi, berbanding terbalik dengan FFNN di mana L1 menghasilkan performa terburuk. Regularisasi L2 pada Autodiff menghasilkan \textit{val loss} 0.5070, sedikit lebih tinggi dari L1 namun lebih rendah dari tanpa regularisasi (0.5152). Distribusi bobot pada Gambar~\ref{fig:reg-weight-dist-l1-autodiff} menunjukkan bahwa efek \textit{sparsity} L1 pada Autodiff jauh lebih moderat dibandingkan FFNN, yang menjelaskan mengapa model Autodiff dengan L1 tidak mengalami \textit{underfitting} yang sama parahnya.
 
 \begin{table}[H]
     \centering
@@ -578,13 +578,13 @@ Implementasi Autodiff pada variasi regularisasi menunjukkan pola yang secara kua
 % ----------------------------------------------------------------
 \section{Pengaruh \textit{RMSNorm}}
 
-\subsubsection{Implementasi FFNN}
+\subsubsection{Implementasi Manual}
 
-Pengujian pengaruh RMSNorm pada implementasi FFNN membandingkan konfigurasi tanpa normalisasi (\textit{Tanpa RMS}) dengan konfigurasi yang menyisipkan RMSNorm setelah transformasi linear dan sebelum fungsi aktivasi pada setiap lapisan. Berdasarkan Tabel~\ref{tab:rms-ffnn}, konfigurasi tanpa RMSNorm menghasilkan \textit{train loss} 0.4966 dan \textit{val loss} 0.5044, sedangkan konfigurasi dengan RMSNorm menghasilkan \textit{train loss} yang sedikit lebih rendah (0.4956) namun \textit{val loss} yang lebih tinggi (0.5056). Perbedaan yang sangat kecil pada \textit{train loss} menunjukkan bahwa RMSNorm tidak memberikan keunggulan optimasi yang berarti pada dataset ini. Sementara itu, \textit{val loss} yang sedikit lebih tinggi pada konfigurasi RMSNorm mengindikasikan bahwa normalisasi justru sedikit mengurangi kemampuan generalisasi. Hal ini kemungkinan disebabkan oleh fakta bahwa dataset ini relatif kecil dan jaringan yang digunakan tidak cukup dalam untuk mengalami masalah distribusi aktivasi yang biasanya diatasi oleh teknik normalisasi.
+Pengujian pengaruh RMSNorm pada implementasi manual membandingkan konfigurasi tanpa normalisasi (\textit{Tanpa RMS}) dengan konfigurasi yang menyisipkan RMSNorm setelah transformasi linear dan sebelum fungsi aktivasi pada setiap lapisan. Berdasarkan Tabel~\ref{tab:rms-ffnn}, konfigurasi tanpa RMSNorm menghasilkan \textit{train loss} 0.4966 dan \textit{val loss} 0.5044, sedangkan konfigurasi dengan RMSNorm menghasilkan \textit{train loss} yang sedikit lebih rendah (0.4956) namun \textit{val loss} yang lebih tinggi (0.5056). Perbedaan yang sangat kecil pada \textit{train loss} menunjukkan bahwa RMSNorm tidak memberikan keunggulan optimasi yang berarti pada dataset ini. Sementara itu, \textit{val loss} yang sedikit lebih tinggi pada konfigurasi RMSNorm mengindikasikan bahwa normalisasi justru sedikit mengurangi kemampuan generalisasi. Hal ini kemungkinan disebabkan oleh fakta bahwa dataset ini relatif kecil dan jaringan yang digunakan tidak cukup dalam untuk mengalami masalah distribusi aktivasi yang biasanya diatasi oleh teknik normalisasi.
 
 \begin{table}[H]
     \centering
-    \caption{Hasil Prediksi Variasi RMSNorm — Implementasi FFNN}
+    \caption{Hasil Prediksi Variasi RMSNorm — Implementasi Manual}
     \begin{tabular}{lll}
         \toprule
         \textbf{Konfigurasi} & \textbf{Train Loss} & \textbf{Val Loss} \\
@@ -599,35 +599,35 @@ Pengujian pengaruh RMSNorm pada implementasi FFNN membandingkan konfigurasi tanp
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{rms_val_loss.png}
-    \caption{Grafik training dan validation loss variasi RMSNorm — Implementasi FFNN}
+    \caption{Grafik training dan validation loss variasi RMSNorm — Implementasi Manual}
     \label{fig:rms-loss-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{weight_norms.png}
-    \caption{Grafik distribusi bobot variasi Tanpa RMS — Implementasi FFNN}
+    \caption{Grafik distribusi bobot variasi Tanpa RMS — Implementasi Manual}
     \label{fig:rms-weight-dist-norms-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{weight_rms.png}
-    \caption{Grafik distribusi bobot variasi RMS — Implementasi FFNN}
+    \caption{Grafik distribusi bobot variasi RMS — Implementasi Manual}
     \label{fig:rms-weight-dist-rms-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{grad_norms.png}
-    \caption{Grafik distribusi gradien variasi Tanpa RMS — Implementasi FFNN}
+    \caption{Grafik distribusi gradien variasi Tanpa RMS — Implementasi Manual}
     \label{fig:rms-grad-dist-norms-ffnn}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{grad_rms.png}
-    \caption{Grafik distribusi gradien variasi RMS — Implementasi FFNN}
+    \caption{Grafik distribusi gradien variasi RMS — Implementasi Manual}
     \label{fig:rms-grad-dist-rms-ffnn}
 \end{figure}
 
@@ -688,9 +688,9 @@ Implementasi Autodiff pada variasi RMSNorm menunjukkan pola yang berbeda secara 
 % ----------------------------------------------------------------
 \section{Perbandingan dengan \textit{sklearn} MLP}
 
-Perbandingan akhir antara ketiga model disajikan pada Tabel~\ref{tab:sklearn}. Implementasi FFNN mencapai akurasi tertinggi (0.7575) dan \textit{recall} tertinggi (0.8651), serta F1-\textit{Score} terbaik (0.8145) di antara ketiga model. Implementasi Autodiff menghasilkan presisi tertinggi (0.7906), namun akurasi dan \textit{recall}-nya lebih rendah dibandingkan FFNN maupun \textit{sklearn}. \textit{Sklearn} \texttt{MLPClassifier} berada di posisi tengah pada hampir semua metrik, dengan akurasi 0.7540 dan F1-\textit{Score} 0.8085.
+Perbandingan akhir antara ketiga model disajikan pada Tabel~\ref{tab:sklearn}. Implementasi manual mencapai akurasi tertinggi (0.7575) dan \textit{recall} tertinggi (0.8651), serta F1-\textit{Score} terbaik (0.8145) di antara ketiga model. Implementasi Autodiff menghasilkan presisi tertinggi (0.7906), namun akurasi dan \textit{recall}-nya lebih rendah dibandingkan FFNN maupun \textit{sklearn}. \textit{Sklearn} \texttt{MLPClassifier} berada di posisi tengah pada hampir semua metrik, dengan akurasi 0.7540 dan F1-\textit{Score} 0.8085.
 
-Secara keseluruhan, ketiga model menghasilkan performa yang sangat kompetitif satu sama lain dengan selisih yang kecil — tidak lebih dari 0.008 pada akurasi dan 0.016 pada F1-\textit{Score}. Hal ini menunjukkan bahwa implementasi \textit{from scratch} pada kedua paradigma (manual dan \textit{autodiff}) berhasil mereplikasi kemampuan library \textit{machine learning} yang sudah mapan. Perbedaan kecil yang ada kemungkinan disebabkan oleh perbedaan strategi inisialisasi bobot, konfigurasi \textit{optimizer}, dan detail implementasi \textit{regularization} antar model. Fakta bahwa implementasi FFNN manual bahkan mengungguli \textit{sklearn} \texttt{MLPClassifier} pada metrik akurasi dan \textit{recall} mengonfirmasi keberhasilan implementasi algoritma \textit{backpropagation} dari awal.
+Secara keseluruhan, ketiga model menghasilkan performa yang sangat kompetitif satu sama lain dengan selisih yang kecil — tidak lebih dari 0.008 pada akurasi dan 0.016 pada F1-\textit{Score}. Hal ini menunjukkan bahwa implementasi \textit{from scratch} pada kedua paradigma (manual dan \textit{autodiff}) berhasil mereplikasi kemampuan library \textit{machine learning} yang sudah mapan. Perbedaan kecil yang ada kemungkinan disebabkan oleh perbedaan strategi inisialisasi bobot, konfigurasi \textit{optimizer}, dan detail implementasi \textit{regularization} antar model. Fakta bahwa implementasi manual bahkan mengungguli \textit{sklearn} \texttt{MLPClassifier} pada metrik akurasi dan \textit{recall} mengonfirmasi keberhasilan implementasi algoritma \textit{backpropagation} dari awal.
 
 \begin{table}[H]
     \centering
@@ -699,7 +699,7 @@ Secara keseluruhan, ketiga model menghasilkan performa yang sangat kompetitif sa
         \toprule
         \textbf{Model} & \textbf{Akurasi} & \textbf{Presisi} & \textbf{Recall} & \textbf{F1-Score} \\
         \midrule
-        Implementasi FFNN      & 0.7575 & 0.7695 & 0.8651 & 0.8145 \\
+        Implementasi Manual    & 0.7575 & 0.7695 & 0.8651 & 0.8145 \\
         Implementasi Autodiff  & 0.7495 & 0.7906 & 0.8066 & 0.7985 \\
         sklearn \texttt{MLPClassifier} & 0.7540 & 0.7759 & 0.8440 & 0.8085 \\
         \bottomrule
