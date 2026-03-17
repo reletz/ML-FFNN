@@ -45,6 +45,9 @@ ML-FFNN/
 - Bonus:
   - **RMSNorm**
   - **Automatic Differentiation**
+  - **LeakyReLU dan ELU**
+  - **Xavier dan He**
+  - **Adam**
 
 ## Requirements
 
