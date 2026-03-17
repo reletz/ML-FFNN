@@ -113,7 +113,7 @@ def sqrt(x: Tensor, eps: float = 1e-15) -> Tensor:
     return out
 
 def linear(x: Tensor) -> Tensor:
-    """Identity activation — passes value and gradient through unchanged"""
+    """Identity activation -> passes value and gradient through unchanged"""
     out = Tensor(x.data.copy(), requires_grad=x.requires_grad, _op="linear")
     out._prev = {x}
 
@@ -128,7 +128,7 @@ def linear(x: Tensor) -> Tensor:
 def relu(x: Tensor) -> Tensor:
     """
     ReLU: max(0, x)
-    Backward: grad * (x > 0)  — gradient is 0 for negative inputs
+    Backward: grad * (x > 0)  -> gradient is 0 for negative inputs
     """
     result = np.maximum(0.0, x.data)
     out = Tensor(result, requires_grad=x.requires_grad, _op="relu")
@@ -197,6 +197,42 @@ def softmax(x: Tensor, axis: int = -1) -> Tensor:
     return out
 
 
+def leakyrelu(x: Tensor, alpha: float = 0.01) -> Tensor:
+    """
+    Leaky ReLU: x if x > 0, else alpha * x
+    Backward: grad * (1 if x > 0, else alpha)
+    """
+    result = np.where(x.data > 0, x.data, alpha * x.data)
+    out = Tensor(result, requires_grad=x.requires_grad, _op="leakyrelu")
+    out._prev = {x}
+
+    def _backward() -> None:
+        if x.requires_grad:
+            grad_mask = np.where(x.data > 0, 1.0, alpha)
+            x.grad = _accum(x.grad, out.grad * grad_mask)
+
+    out._backward = _backward
+    return out
+
+
+def elu(x: Tensor, alpha: float = 1.0) -> Tensor:
+    """
+    ELU: x if x > 0, else alpha * (exp(x) - 1)
+    Backward: grad * (1 if x > 0, else alpha * exp(x))
+    """
+    result = np.where(x.data > 0, x.data, alpha * (np.exp(x.data) - 1.0))
+    out = Tensor(result, requires_grad=x.requires_grad, _op="elu")
+    out._prev = {x}
+
+    def _backward() -> None:
+        if x.requires_grad:
+            grad_mask = np.where(x.data > 0, 1.0, alpha * np.exp(x.data))
+            x.grad = _accum(x.grad, out.grad * grad_mask)
+
+    out._backward = _backward
+    return out
+
+
 def mse_loss(pred: Tensor, target: Tensor) -> Tensor:
     diff = pred - target
     return mean(diff * diff)
@@ -219,6 +255,8 @@ _ACTIVATIONS = {
     "sigmoid": sigmoid,
     "tanh":    tanh,
     "softmax": softmax,
+    "leakyrelu": leakyrelu,
+    "elu": elu
 }
 
 _LOSSES = {

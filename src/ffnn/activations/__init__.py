@@ -1,4 +1,4 @@
-from .Activation import Linear, ReLU, Sigmoid, Tanh, Softmax
+from .Activation import Linear, ReLU, Sigmoid, Tanh, Softmax, ELU, LeakyReLU
 
 ACTIVATION_REGISTRY = {
   "linear": Linear,
@@ -6,6 +6,8 @@ ACTIVATION_REGISTRY = {
   "sigmoid": Sigmoid,
   "tanh": Tanh,
   "softmax": Softmax,
+  "leakyrelu": LeakyReLU,
+  "elu": ELU
 }
 
 def get_activation(name):
@@ -16,4 +18,4 @@ def get_activation(name):
   
   return ACTIVATION_REGISTRY[name_lower]() 
 
-__all__ = ["Linear", "ReLU", "Sigmoid", "Tanh", "Softmax", "get_activation"]
+__all__ = ["Linear", "ReLU", "Sigmoid", "Tanh", "Softmax", "ELU", "LeakyReLU", "get_activation"]
