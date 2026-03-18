@@ -22,7 +22,7 @@ Secara keseluruhan, tugas besar ini berhasil menunjukkan bahwa implementasi FFNN
 
 \section{Saran}
 
-Terdapat beberapa saran yang dapat dipertimbangkan untuk pengembangan lebih lanjut. Pertama, pengujian dapat diperluas dengan menambahkan variasi jumlah epoch, ukuran mini-batch, serta eksperimen inisialisasi bobot seperti Xavier dan He agar analisis pengaruh hyperparameter menjadi lebih lengkap. Hal ini relevan karena spesifikasi tugas juga menekankan pentingnya analisis hyperparameter dan eksperimen yang sistematis pada proses pelatihan model.
+Terdapat beberapa saran yang dapat dipertimbangkan untuk pengembangan lebih lanjut. Pertama, pengujian dapat diperluas dengan menambahkan variasi jumlah epoch dan ukuran mini-batch. Hal ini relevan karena spesifikasi tugas juga menekankan pentingnya analisis hyperparameter dan eksperimen yang sistematis pada proses pelatihan model.
 
 Kedua, implementasi regularisasi dan RMSNorm masih dapat disempurnakan, terutama pada paradigma Autodiff. Hasil eksperimen menunjukkan bahwa regularisasi L1 dan RMSNorm memberikan perilaku yang cukup berbeda antara implementasi manual dan Autodiff, sehingga perlu dilakukan verifikasi lebih lanjut terhadap detail perhitungan gradien, skala koefisien regularisasi, serta interaksi antara parameter \(\gamma\) pada RMSNorm dengan optimizer. Perbaikan ini berpotensi meningkatkan stabilitas pelatihan dan membuat hasil kedua paradigma menjadi lebih konsisten.
 

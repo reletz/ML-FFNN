@@ -636,6 +636,139 @@ Implementasi Autodiff pada variasi regularisasi menunjukkan pola yang secara kua
 
 
 % ----------------------------------------------------------------
+\section{Pengaruh Inisialisasi Bobot}
+
+\subsubsection{Implementasi Manual}
+
+Pengujian variasi inisialisasi bobot pada implementasi manual membandingkan \textit{Xavier initialization} dan \textit{He initialization}. 
+Berdasarkan Tabel~\ref{tab:init-ffnn}, Xavier menghasilkan \textit{train loss} yang lebih rendah (0.4745) dan \textit{val loss} yang 
+juga lebih rendah (0.5056) dibandingkan He (0.4814 / 0.5074). Hal ini menunjukkan bahwa pada implementasi manual, Xavier memberikan 
+proses optimisasi yang lebih stabil dan generalisasi yang sedikit lebih baik. Kurva pada Gambar~\ref{fig:init-loss-ffnn} memperlihatkan bahwa Xavier 
+secara konsisten mempertahankan \textit{training loss} lebih rendah sepanjang epoch, sementara \textit{validation loss}-nya 
+juga cenderung lebih stabil. Distribusi bobot pada Gambar~\ref{fig:init-weight-xavier-ffnn} dan Gambar~\ref{fig:init-weight-he-ffnn} 
+menunjukkan bahwa Xavier menghasilkan sebaran bobot yang sedikit lebih lebar pada dua layer pertama, 
+sedangkan He menghasilkan sebaran yang lebih terkonsentrasi. Distribusi gradien pada Gambar~\ref{fig:init-grad-xavier-ffnn} dan 
+Gambar~\ref{fig:init-grad-he-ffnn} juga memperlihatkan bahwa Xavier mempertahankan gradien dengan variasi yang 
+sedikit lebih besar, yang kemungkinan membantu proses pembelajaran tetap aktif di 
+seluruh layer.
+
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Inisialisasi Bobot --- Implementasi Manual}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Inisialisasi} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        Xavier & 0.4745 & 0.5056 \\
+        He     & 0.4814 & 0.5074 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:init-ffnn}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{train_loss_init.png}
+    \includegraphics[width=0.4\textwidth]{val_loss_init.png}
+    \caption{Grafik training dan validation loss variasi inisialisasi bobot --- Implementasi Manual}
+    \label{fig:init-loss-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{weight_xavier.png}
+    \caption{Grafik distribusi bobot variasi Xavier initialization --- Implementasi Manual}
+    \label{fig:init-weight-xavier-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{weight_he.png}
+    \caption{Grafik distribusi bobot variasi He initialization --- Implementasi Manual}
+    \label{fig:init-weight-he-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grad_xavier.png}
+    \caption{Grafik distribusi gradien variasi Xavier initialization --- Implementasi Manual}
+    \label{fig:init-grad-xavier-ffnn}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{grad_he.png}
+    \caption{Grafik distribusi gradien variasi He initialization --- Implementasi Manual}
+    \label{fig:init-grad-he-ffnn}
+\end{figure}
+
+\subsubsection{Implementasi Autodiff}
+
+Pengujian yang sama pada implementasi Autodiff menunjukkan pola yang lebih konsisten memihak Xavier. Berdasarkan Tabel~\ref{tab:init-autodiff}, 
+Xavier menghasilkan \textit{train loss} 0.4736, dan \textit{val loss} 0.5098. Sementara itu, He menghasilkan seluruh metrik 
+tidak sebagus Xavier, yakni \textit{train loss} 0.4739, dan \textit{val loss} 0.5145. Perbedaannya memang kecil 
+pada \textit{training loss}, tetapi cukup jelas pada \textit{validation loss}, sehingga Xavier tampak 
+lebih baik dalam menjaga generalisasi. Kurva pada Gambar~\ref{fig:init-loss-autodiff} menunjukkan bahwa kedua konfigurasi 
+sama-sama cepat turun pada beberapa epoch pertama, namun He mengalami fluktuasi \textit{validation loss} yang lebih besar, 
+termasuk lonjakan yang cukup terlihat di tengah pelatihan. Distribusi bobot pada Gambar~\ref{fig:init-weight-xavier-autodiff} dan 
+Gambar~\ref{fig:init-weight-he-autodiff} memperlihatkan bahwa Xavier menghasilkan sebaran bobot yang relatif 
+lebih lebar pada layer-layer awal, sedangkan He lebih sempit pada dua layer pertama tetapi lebih menyebar pada layer keluaran. 
+Dari sisi gradien, Gambar~\ref{fig:init-grad-xavier-autodiff} dan Gambar~\ref{fig:init-grad-he-autodiff} menunjukkan bahwa He 
+menghasilkan gradien yang lebih terkonsentrasi di sekitar nol, sementara Xavier mempertahankan variasi gradien yang sedikit lebih besar, 
+terutama pada layer terdalam. Pola ini sejalan dengan hasil \textit{validation loss} yang lebih baik pada Xavier.
+
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Inisialisasi Bobot --- Implementasi Autodiff}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Inisialisasi} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        Xavier & 0.4736 & 0.5098 \\
+        He     & 0.4739 & 0.5145 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:init-autodiff}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{ad_train_loss_init.png}
+    \includegraphics[width=0.4\textwidth]{ad_val_loss_init.png}
+    \caption{Grafik training dan validation loss variasi inisialisasi bobot --- Implementasi Autodiff}
+    \label{fig:init-loss-autodiff}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ad_weight_xavier.png}
+    \caption{Grafik distribusi bobot variasi Xavier initialization --- Implementasi Autodiff}
+    \label{fig:init-weight-xavier-autodiff}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ad_weight_he.png}
+    \caption{Grafik distribusi bobot variasi He initialization --- Implementasi Autodiff}
+    \label{fig:init-weight-he-autodiff}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ad_grad_xavier.png}
+    \caption{Grafik distribusi gradien variasi Xavier initialization --- Implementasi Autodiff}
+    \label{fig:init-grad-xavier-autodiff}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ad_grad_he.png}
+    \caption{Grafik distribusi gradien variasi He initialization --- Implementasi Autodiff}
+    \label{fig:init-grad-he-autodiff}
+\end{figure}
+
+
+% ----------------------------------------------------------------
 \section{Pengaruh \textit{RMSNorm}}
 
 \subsubsection{Implementasi Manual}
