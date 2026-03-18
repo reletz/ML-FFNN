@@ -878,6 +878,119 @@ Implementasi Autodiff pada variasi RMSNorm menunjukkan pola yang berbeda secara 
 \end{figure}
 
 
+
+% ----------------------------------------------------------------
+\section{Pengaruh Fungsi Optimisasi}
+ 
+\subsubsection{Implementasi Manual}
+ 
+Pengujian variasi fungsi optimisasi pada implementasi manual membandingkan \textit{Gradient Descent} (GD) standar dengan Adam (\textit{Adaptive Moment Estimation}). Hasil pada Tabel~\ref{tab:opt-ffnn} menunjukkan perbedaan yang sangat mencolok antara kedua optimizer. GD menghasilkan \textit{train loss} sebesar 1.5086 dan \textit{val loss} sebesar 1.4980 — jauh di atas rentang nilai yang dihasilkan oleh seluruh eksperimen lainnya. Nilai loss yang sangat tinggi ini mengindikasikan bahwa GD dengan \textit{learning rate} default gagal konvergen secara efektif dalam jumlah epoch yang tersedia: langkah pembaruan yang seragam untuk semua parameter tidak mampu menavigasi ruang loss yang kompleks dengan baik. Sebaliknya, Adam menghasilkan \textit{train loss} 0.6009 dan \textit{val loss} 0.6052, yang meskipun masih lebih tinggi dibandingkan eksperimen lain (yang umumnya menggunakan Adam), menunjukkan konvergensi yang jauh lebih baik. Keunggulan Adam berasal dari mekanisme \textit{adaptive learning rate} per-parameter: parameter yang jarang diperbarui mendapat langkah lebih besar, sementara parameter yang sering diperbarui mendapat langkah lebih kecil, sehingga proses optimasi menjadi lebih stabil dan efisien. Distribusi bobot dan gradien pada Gambar~\ref{fig:opt-weight-dist-gd-ffnn}--\ref{fig:opt-grad-dist-adam-ffnn} memperlihatkan bahwa GD menghasilkan sebaran bobot dan gradien yang jauh lebih lebar, mencerminkan ketidakstabilan optimasi yang dialami.
+ 
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Fungsi Optimisasi — Implementasi Manual}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Optimizer} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        Gradient Descent & 1.5086 & 1.4980 \\
+        Adam             & 0.6009 & 0.6052 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:opt-ffnn}
+\end{table}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{opt_loss.png}
+    \includegraphics[width=0.4\textwidth]{opt_val.png}
+    \caption{Grafik training dan validation loss variasi fungsi optimisasi — Implementasi Manual}
+    \label{fig:opt-loss-ffnn}
+\end{figure}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{opt_weight_gd.png}
+    \caption{Grafik distribusi bobot Gradient Descent — Implementasi Manual}
+    \label{fig:opt-weight-dist-gd-ffnn}
+\end{figure}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{opt_weight_adam.png}
+    \caption{Grafik distribusi bobot Adam — Implementasi Manual}
+    \label{fig:opt-weight-dist-adam-ffnn}
+\end{figure}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{opt_grad_gd.png}
+    \caption{Grafik distribusi gradien Gradient Descent — Implementasi Manual}
+    \label{fig:opt-grad-dist-gd-ffnn}
+\end{figure}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{opt_grad_adam.png}
+    \caption{Grafik distribusi gradien Adam — Implementasi Manual}
+    \label{fig:opt-grad-dist-adam-ffnn}
+\end{figure}
+ 
+\subsubsection{Implementasi Autodiff}
+ 
+Implementasi Autodiff pada variasi fungsi optimisasi menunjukkan pola yang secara kualitatif sama dengan implementasi manual, namun dengan nilai yang jauh lebih baik pada kedua optimizer. Adam menghasilkan \textit{train loss} 0.4745 dan \textit{val loss} 0.5099, sementara GD menghasilkan \textit{train loss} 0.4958 dan \textit{val loss} 0.5237. Berbeda dengan implementasi manual di mana GD hampir sepenuhnya gagal konvergen, GD pada Autodiff masih menghasilkan loss yang berada dalam rentang wajar — hanya sekitar 0.02 lebih tinggi dari Adam pada \textit{train loss}. Perbedaan besar antara kedua implementasi pada GD (1.5086 vs 0.4958) kemungkinan disebabkan oleh perbedaan skala gradien yang dihasilkan oleh masing-masing paradigma: pada implementasi manual, gradien yang dihitung secara eksplisit mungkin memiliki skala yang berbeda sehingga GD dengan \textit{learning rate} yang sama menghasilkan pembaruan yang tidak stabil. Perbandingan Adam antara kedua implementasi juga informatif: Autodiff (0.4745/0.5099) menghasilkan \textit{train loss} yang lebih rendah namun \textit{val loss} yang lebih tinggi dibandingkan manual (0.6009/0.6052), menunjukkan bahwa Autodiff dengan Adam lebih agresif dalam mengoptimasi data latih. Secara keseluruhan, Adam terbukti sebagai pilihan optimizer yang jauh lebih robust pada kedua implementasi.
+ 
+\begin{table}[H]
+    \centering
+    \caption{Hasil Prediksi Variasi Fungsi Optimisasi — Implementasi Autodiff}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Optimizer} & \textbf{Train Loss} & \textbf{Val Loss} \\
+        \midrule
+        Gradient Descent & 0.4958 & 0.5237 \\
+        Adam             & 0.4745 & 0.5099 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:opt-autodiff}
+\end{table}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{ad_opt_loss.png}
+    \includegraphics[width=0.4\textwidth]{ad_opt_val.png}
+    \caption{Grafik training dan validation loss variasi fungsi optimisasi — Implementasi Autodiff}
+    \label{fig:opt-loss-autodiff}
+\end{figure}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ad_opt_weight_gd.png}
+    \caption{Grafik distribusi bobot Gradient Descent — Implementasi Autodiff}
+    \label{fig:opt-weight-dist-gd-autodiff}
+\end{figure}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ad_opt_weight_adam.png}
+    \caption{Grafik distribusi bobot Adam — Implementasi Autodiff}
+    \label{fig:opt-weight-dist-adam-autodiff}
+\end{figure}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ad_opt_grad_gd.png}
+    \caption{Grafik distribusi gradien Gradient Descent — Implementasi Autodiff}
+    \label{fig:opt-grad-dist-gd-autodiff}
+\end{figure}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ad_opt_grad_adam.png}
+    \caption{Grafik distribusi gradien Adam — Implementasi Autodiff}
+    \label{fig:opt-grad-dist-adam-autodiff}
+\end{figure}
+
+
 % ----------------------------------------------------------------
 \section{Perbandingan dengan \textit{sklearn} MLP}
 
