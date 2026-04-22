@@ -124,7 +124,17 @@ Implementasi Autodiff pada variasi \textit{depth} mengonfirmasi pola yang sama s
 
 \subsubsection{Implementasi Manual}
 
-Pengujian variasi fungsi aktivasi pada implementasi manual menunjukkan perbedaan yang relatif kecil antar konfigurasi, namun dengan pola yang informatif. Berdasarkan Tabel~\ref{tab:activation-ffnn}, LeakyReLU menghasilkan \textit{train loss} terendah (0.4743), diikuti ReLU (0.4735), Tanh (0.4787), ELU (0.4823), Linear (0.4815), dan Sigmoid (0.4870). Pada sisi \textit{val loss}, Sigmoid unggul dengan nilai terkecil (0.5018), diikuti Linear (0.5052), ELU (0.5074), ReLU (0.5069), Tanh (0.5087), dan LeakyReLU (0.5122). Hasil ini menunjukkan adanya \textit{trade-off} yang menarik: LeakyReLU dan ReLU paling efektif dalam mengoptimasi data latih berkat sifat gradiennya yang tidak jenuh (\textit{non-saturating}), namun Sigmoid memberikan generalisasi terbaik meskipun \textit{train loss}-nya paling tinggi. Sementara itu, ELU menempati posisi tengah pada kedua metrik, menunjukkan keseimbangan antara kemampuan fitting dan generalisasi. Distribusi bobot dan gradien pada Gambar~\ref{fig:activation-weight-dist-lin-ffnn}--\ref{fig:activation-grad-dist-elu-ffnn} memperlihatkan bahwa tiap fungsi aktivasi menghasilkan pola distribusi yang berbeda, terutama pada lapisan keluaran, yang berkontribusi pada perbedaan performa generalisasi tersebut.
+Pengujian variasi fungsi aktivasi pada implementasi manual menunjukkan perbedaan yang relatif kecil antar konfigurasi, 
+namun dengan pola yang informatif. Berdasarkan Tabel~\ref{tab:activation-ffnn}, ReLU menghasilkan \textit{train loss} 
+terendah (0.4735), diikuti LeakyReLU (0.4743), Tanh (0.4787), Linear (0.4815), ELU (0.4823), dan Sigmoid (0.4870). Pada sisi 
+\textit{val loss}, Sigmoid unggul dengan nilai terkecil (0.5018), diikuti Linear (0.5052), ReLU (0.5069), ELU (0.5074), 
+Tanh (0.5087), dan LeakyReLU (0.5122). Hasil ini menunjukkan adanya \textit{trade-off} yang menarik: 
+LeakyReLU dan ReLU paling efektif dalam mengoptimasi data latih berkat sifat gradiennya yang tidak jenuh (\textit{non-saturating}), 
+namun Sigmoid memberikan generalisasi terbaik meskipun \textit{train loss}-nya paling tinggi. Sementara itu, 
+ELU menempati posisi tengah pada kedua metrik, menunjukkan keseimbangan antara kemampuan fitting dan generalisasi. 
+Distribusi bobot dan gradien pada Gambar~\ref{fig:activation-weight-dist-lin-ffnn}--\ref{fig:activation-grad-dist-elu-ffnn} 
+memperlihatkan bahwa tiap fungsi aktivasi menghasilkan pola distribusi yang berbeda, terutama pada lapisan keluaran, yang 
+berkontribusi pada perbedaan performa generalisasi tersebut.
 
 \begin{table}[H]
     \centering
